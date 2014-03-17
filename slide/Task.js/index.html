@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>Task.js</title>
+
+<meta name="description" content="Task.js">    
+
+  <meta name="author" content="A very simple way to wait for asynchronius processes." />
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+
+<!-- For syntax highlighting -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+
+<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+<script>
+  document.write( '<link rel="stylesheet" href="css/print/' +
+    ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + 
+    '.css" type="text/css" media="print">' );
+</script>
+<script src="./assets/js/Help.js"></script>
+<script src="./assets/js/Task.js"></script>
+
+<!--[if lt IE 9]>
+<script src="lib/js/html5shiv.js"></script>
+<![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+<h1>Task.js</h1>
+<h3>A very simple way to wait for asynchronius processes.</h3>
+<p>
+<h4><span class="citation" data-cites="uupaa">@uupaa</span> - 2014-02-14</h4>
+</p>
+</section>  
+
+
+<!-- ----------------------------------------------------- -->
+
+<!-- ----------------------------------------------------- -->
+
+<section id="javascript-async-idiom" class="level1">
+<h1>JavaScript, Async, Idiom</h1>
+<section id="javascript-は非同期処理の塊" class="level2">
+<h2>JavaScript は非同期処理の塊</h2>
+<ul>
+<li>XHR</li>
+<li>onload</li>
+<li>setTimeout</li>
+<li>postMessage</li>
+<li>addEventListener</li>
+<li>DOMContentLoaded</li>
+</ul>
+</section>
+<section id="section" class="level2">
+<h2></h2>
+<p>非同期プログラミングを支援するイディオムには、<br />Deferred, Promises, async, await, DOM Promise, Flow.js などがありますが…</p>
+</section>
+<section id="section-1" class="level2">
+<h2></h2>
+<p>今日紹介する <strong><a href="https://github.com/uupaa/Task.js">Task.js</a></strong> も、非同期プログラミングを支援するライブラリです</p>
+<hr />
+<p>( Task.js は <strong><a href="http://www.slideshare.net/uupaa/flowjs">Flow.js</a></strong><a href="#section"></a> の改良版です )</p>
+</section>
+<section id="section-2" class="level2">
+<h2></h2>
+<p><strong>Task.js</strong> は、Node.js, Browser, WebWorkers 上で動作し、かつ軽量です</p>
+<p><br /> 環境に依存するコードや、複雑なトリックに依存しない作りになっているため、どこでも動作します</p>
+</section>
+<section id="section-3" class="level2">
+<h2></h2>
+<p>Task.js を導入すると、非同期処理やブラウザのサポート状況に悩まされず、 ロジックのコーディングに集中できます</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="非同期処理へのneedsとwants" class="level1">
+<h1>非同期処理へのNeedsとWants</h1>
+<section id="複数の非同期処理の完了を待ちたい" class="level2">
+<h2>複数の非同期処理の完了を待ちたい</h2>
+<ul>
+<li>ダウンロードの完了を待ちつつアニメーションしたい</li>
+<li>いくつかの非同期処理をグルーピングし、 それらの終了を待ちたい事がよくある</li>
+<li>同期/非同期が混在すると、場当たり的に、 一方はループで、一方はコールバックの連鎖で制御している</li>
+<li>同期/非同期を意識せずに扱いたい</li>
+<li>毎回同じようなコードを書いて捨てている気がする</li>
+</ul>
+</section>
+<section id="シンプルな実装がほしい" class="level2">
+<h2>シンプルな実装がほしい</h2>
+<ul>
+<li>Deferred や Promises を JavaScript に詳しくない人や、<br /> 非プログラマーに説明するのは骨が折れる</li>
+</ul>
+</section>
+<section id="運用で困らないようにしたい" class="level2">
+<h2>運用で困らないようにしたい</h2>
+<ul>
+<li>特定の環境に依存したり、頻繁に更新される重厚なライブラリには依存したくない(できない)</li>
+</ul>
+</section>
+<section id="デバッグのしやすさも大事" class="level2">
+<h2>デバッグのしやすさも大事</h2>
+<ul>
+<li>どの非同期処理で止まっているか、原因を素早く特定できないと困る</li>
+<li>コマンド一発で、実行中の同期/非同期関数を一覧したい</li>
+</ul>
+</section>
+<section id="仕様変更にも強い実装にしたい" class="level2">
+<h2>仕様変更にも強い実装にしたい</h2>
+<ul>
+<li>UIアニメーションや、ゲームのアニメーションの流れや順番は、 クオリティアップの段階で頻繁に修正が入るが、 それらを変更に強い形で、データ化またはコード化できないか</li>
+<li>順番を変えたいだけなのに、 コードをガバっと変更する感じの実装はつらい</li>
+</ul>
+</section>
+<section id="section-4" class="level2">
+<h2></h2>
+<p>Task.js はこれら全ての<br /><strong>Needs</strong> と <strong>Wants</strong> を満たしてくれます</p>
+<hr />
+<p>では、Task.js の機能を見て行きましょう</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.js-の基本" class="level1">
+<h1>Task.js の基本</h1>
+<pre class="js"><code>function executeUserTask() { return true; }
+function callback(err) { console.log(&quot;finished&quot;); }
+
+var task = new Task(2, callback);
+
+executeUserTask() ? task.pass() : task.miss(); // sync
+
+setTimeout(function() { // async
+    executeUserTask() ? task.pass() : task.miss();
+}, 1000);</code></pre>
+<section id="section-5" class="level2">
+<h2></h2>
+<ul>
+<li>Task.js では、ユーザの同期/非同期処理を<br /> <strong>ユーザータスク</strong> と呼びます</li>
+<li>var task = new Task( <strong>2</strong>, <strong>callback</strong> ) は、<strong>task.pass()</strong> が2回呼ばれるのを <strong>待ちます</strong></li>
+</ul>
+</section>
+<section id="section-6" class="level2">
+<h2></h2>
+<ul>
+<li><strong>task.pass()</strong> を2回呼ぶと <strong>待機成功</strong> で終了し <strong>callback</strong> が呼ばれます</li>
+<li><strong>task.miss()</strong> を1回呼ぶと <strong>待機失敗</strong> で終了し <strong>callback</strong> が呼ばれます</li>
+<li>callback( <strong>err</strong> ) は待機成功で null,<br /> 待機失敗で Error オブジェクトになります</li>
+</ul>
+</section>
+<section id="まとめ" class="level2">
+<h2>まとめ</h2>
+<ol type="1">
+<li><strong>new Task</strong>( <strong>ユーザタスクの数</strong> , <strong>callback</strong> ) で待機開始</li>
+<li>ユーザタスク成功で <strong>task.pass()</strong> を、<br /> 失敗で <strong>task.miss()</strong> を呼ぶ</li>
+<li>待機終了で <strong>callback</strong> が呼ばれる</li>
+</ol>
+</section>
+<section id="section-7" class="level2">
+<h2></h2>
+<p>Task.js の基本はこれだけです</p>
+<hr />
+
+<p>次のページからは応用です<br />Task.js の便利な機能を紹介していきます</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.js-を便利に使う" class="level1">
+<h1>Task.js を便利に使う</h1>
+<section id="section-8" class="level2">
+<h2></h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">使い方</th>
+<th style="text-align: left;">該当するAPI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">失敗を許す</td>
+<td style="text-align: left;">task.missable()</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">データを溜める,<br />取り出す</td>
+<td style="text-align: left;">task.buffer(), callback(buffer), <br />Task.flatten(), Task.arraynize(), Task.objectize()</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">デバッグする</td>
+<td style="text-align: left;">Task.dump(), Task.drop()</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">強制終了する</td>
+<td style="text-align: left;">task.exit()</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">エラー</td>
+<td style="text-align: left;">task.message(), task.done()</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">もっと待つ</td>
+<td style="text-align: left;">task.extend()</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">短く書く</td>
+<td style="text-align: left;">task.done(err)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Taskを連結する</td>
+<td style="text-align: left;">Junction, Task.run()</td>
+</tr>
+</tbody>
+</table>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.missable" class="level1">
+<h1>task.missable()</h1>
+<section id="section-9" class="level2">
+<h2></h2>
+<pre class="js"><code>function callback(err) { console.log(err.message); }
+
+var task = new Task(1, callback, { name: &quot;MissableTask&quot; });
+
+task.missable(2);
+task.miss(); // ユーザタスク失敗(missableが2なので許容する)
+task.miss(); // ユーザタスク失敗(missableが2なので許容する)
+task.miss(); // ユーザタスク失敗(missableが2なので待機失敗) -&gt; callback(Error)</code></pre>
+<ul>
+<li>成功しなければならないユーザタスクが1つあり、<br /> 2回までの試行を許可する(失敗を許容する)場合は、<br /> new Task(1). <strong>missable(2)</strong> とします</li>
+<li><strong>task.missable(n)</strong> で失敗を許容する回数を設定できます</li>
+<li>task.missable(0) の状態で <strong>task.miss()</strong> を一度でも呼ぶと待機失敗で終了します</li>
+<li>初期状態は task.missble(0) です</li>
+</ul>
+</section>
+<section id="section-10" class="level2">
+<h2></h2>
+<pre class="js"><code>function callback(err) { console.log(err.message); }
+var task = new Task(1, callback).missable(1);
+
+download([&quot;http://cdn1.example.com/image.png&quot;,
+          &quot;http://cdn2.example.com/image.png&quot;], task);
+
+function download(urls, task) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function() { task.pass(); };
+    xhr.onerror = function() {
+        if ( !task.miss().isFinished() ) {
+            download(urls, task);
+        }
+    };
+    xhr.open(&quot;GET&quot;, urls.shift(), true);
+    xhr.send()
+}</code></pre>
+<ul>
+<li>task.missable を使うと、<br /> 失敗するかもしれない処理を簡単に記述できます</li>
+<li>上記の例では、CDN1 からダウンロードできない場合に CDN2 を利用してリカバリを試みます</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="buffer" class="level1">
+<h1>buffer</h1>
+<section id="task.buffer" class="level2">
+<h2>task.buffer()</h2>
+<pre class="js"><code>function callback(err, buffer) {
+    console.log(buffer[0]);   // -&gt; &quot;value1&quot;
+    console.log(buffer.key2); // -&gt; &quot;value2&quot;
+}
+
+var task = new Task(1, callback);
+
+task.push(&quot;value1&quot;);
+task.set(&quot;key2&quot;, &quot;value2&quot;);
+task.pass();</code></pre>
+<ul>
+<li>buffer の実体は配列( Array )です</li>
+<li>buffer に値を設定し callback で値を受け取る事ができます</li>
+<li><strong>task.push(value)</strong> は buffer.push(value) を行います</li>
+<li><strong>task.set(key,value)</strong> は buffer[key] = value を行います</li>
+<li><strong>task.buffer()</strong> で配列に直接アクセスも可能です</li>
+</ul>
+</section>
+<section id="shared-buffer" class="level2">
+<h2>Shared Buffer</h2>
+<pre class="js"><code>function callback(err, buffer) { // sharedBuffer: [&quot;junction&quot;, &quot;value1&quot;, &quot;value2&quot;]
+    console.log(buffer.length); // -&gt; 3
+}
+
+var junction = new Task(2, callback).push(&quot;junction&quot;);
+var task1    = new Task(1, junction);
+var task2    = new Task(1, junction);
+
+task1.push(&quot;value1&quot;).pass();
+task2.push(&quot;value2&quot;).pass();</code></pre>
+<ul>
+<li>後述する Junction を使い、階層構造をもった Task は、<br /> お互いの <strong>buffer を共有した状態</strong> になります</li>
+<li>task1.push(&quot;value1&quot;) は junction.push(&quot;value1&quot;) と <strong>同じ結果</strong> になり<br /> task2.push(&quot;value2&quot;) も junction.push(&quot;value2&quot;) と同じ結果になります</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="bufferarray-utilities" class="level1">
+<h1>Buffer(Array) Utilities</h1>
+<section id="task.flatten" class="level2">
+<h2>Task.flatten()</h2>
+<pre class="js"><code>var array = [ [1,2], [3,4] ];
+
+Task.flatten(array); // -&gt; [1, 2, 3, 4]</code></pre>
+<ul>
+<li><strong>Task.flatten(array)</strong>を使うと、ネストした2次元配列を1次元配列に展開できます</li>
+<li>2次元配列を含んだ Buffer の値を展開する時に便利です</li>
+</ul>
+<pre class="js"><code>Task.flatten([ [1,2], [3,4], [ [5,6] ] ]); // -&gt; [1, 2, 3, 4, [5, 6] ]</code></pre>
+<ul>
+<li>3次元配列は2次元配列になります</li>
+</ul>
+</section>
+<section id="task.arraynize" class="level2">
+<h2>Task.arraynize()</h2>
+<pre class="js"><code>var array = [1,2,3];
+array[&quot;key&quot;] = &quot;value&quot;; // Array にプロパティを追加
+
+Task.arraynize(array); // -&gt; [1, 2, 3] になる</code></pre>
+<ul>
+<li><strong>Task.arraynize(array)</strong>は、新しい配列を作り array の値をコピーします</li>
+<li>array のプロパティ(&quot;key&quot;, &quot;value&quot;)は <strong>コピーしません</strong></li>
+<li>Buffer の値をクローンするために利用できます</li>
+</ul>
+</section>
+<section id="task.objectize" class="level2">
+<h2>Task.objectize()</h2>
+<pre class="js"><code>var array = [1,2,3];
+array[&quot;key&quot;] = &quot;value&quot;; // Array にプロパティを追加
+
+Task.objectize(array); // -&gt; { 0: 1, 1: 2, 2: 3, key: &quot;value&quot; }</code></pre>
+<ul>
+<li><strong>Task.objectize(array)</strong>は、新しい Object を作り array の値をコピーします</li>
+<li>array のプロパティ(&quot;key&quot;, &quot;value&quot;)も <strong>コピーします</strong></li>
+<li>Buffer の値をオブジェクトとしてクローンするために利用できます <!-- ----------------------------------------------------- --></li>
+</ul>
+</section>
+</section>
+<section id="task.dump" class="level1">
+<h1>Task.dump()</h1>
+<section id="task-一覧のダンプ" class="level2">
+<h2>Task 一覧のダンプ</h2>
+<pre class="js"><code>Task.dump();
+{
+    &quot;anonymous@165&quot;: { junction: false, taskCount: 1, missableCount: 0, missedCount: 0, passedCount: 0, state: &quot;&quot; }
+    &quot;anonymous@166&quot;: { junction: false, taskCount: 1, missableCount: 0, missedCount: 0, passedCount: 0, state: &quot;&quot; }
+    &quot;anonymous@167&quot;: { junction: false, taskCount: 1, missableCount: 0, missedCount: 0, passedCount: 0, state: &quot;&quot; }
+}</code></pre>
+<!--
+<input type="button" onclick="console.log(Task.dump())" value="Task.dump()"></input>
+ -->
+
+<ul>
+<li><strong>Task.dump()</strong> は Task のスナップショットを返します</li>
+<li>実行中の Task の一覧と状態を確認できます</li>
+</ul>
+</section>
+<section id="task-名による絞込" class="level2">
+<h2>Task 名による絞込</h2>
+<pre class="js"><code>var task = new Task(1, callback, { name: &quot;TEST&quot; });
+
+Task.dump(&quot;TEST&quot;);
+{
+    &quot;TEST@166&quot;: { junction: false, taskCount: 1, missableCount: 0, missedCount: 0, passedCount: 0, state: &quot;&quot; }
+}</code></pre>
+<ul>
+<li>Task の第三引数で Task 名を指定し、<strong>Task.dump(taskName)</strong> で絞り込めます</li>
+</ul>
+</section>
+<section id="section-11" class="level2">
+<h2></h2>
+<pre class="js"><code>Task.drop();</code></pre>
+<ul>
+<li><span style="color:gold">Task.drop()</span> は、スナップショットを生成するための内部的な情報を全て削除します</li>
+<li>この情報は、Task の待機終了で自動的に削除されます</li>
+<li>通常利用では Task.drop() を明示的に呼ぶ必要はありません</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.exit" class="level1">
+<h1>task.exit()</h1>
+<pre class="js"><code>function callback(err) { }
+
+var task = new Task(100, callback).missable(100);
+
+task.exit(); // 強制終了 -&gt; callback(new Error(...))</code></pre>
+<section id="section-12" class="level2">
+<h2></h2>
+<ul>
+<li><strong>task.exit()</strong> を使うと、 ユーザのタスク数や missable の状態に関わらず、待機失敗で強制終了します</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.done-message" class="level1">
+<h1>task.done(), message()</h1>
+<section id="error-handling" class="level2">
+<h2>Error Handling</h2>
+<pre class="js"><code>var task = new Task(1, function(err) {
+    if (err) { console.log(err.message); } // -&gt; &quot;O_o&quot;
+});
+
+function userTask(task) {
+    try {
+        throw new Error(&quot;O_o&quot;); // 例外発生!
+        task.pass(); // ここには到達しない
+    } catch (err) {
+        task.message(err.message).miss(); // task.message(&quot;O_o&quot;) を設定
+    }
+}
+userTask(task);</code></pre>
+<ul>
+<li>エラーハンドリングはユーザタスク側で行ってください</li>
+<li>問題が発生したら <strong>task.miss()</strong> を呼んでください</li>
+<li><strong>task.message()</strong> を使うと、待機失敗時に callback に渡される Errorオブジェクトのメッセージを設定できます</li>
+</ul>
+</section>
+<section id="section-13" class="level2">
+<h2></h2>
+<ul>
+<li><strong>task.done</strong> に Error オブジェクトを渡すと <strong>task.message(err.message).miss()</strong> として動作します</li>
+<li>Errorオブジェクト以外なら <strong>task.pass()</strong> として動作します</li>
+<li>task.done を使うと Error オブジェクトの有無で <strong>task.pass()</strong> または <strong>task.miss()</strong> を呼び分けている処理をシンプルに記述できます</li>
+</ul>
+<pre class="js"><code>// このようなありがちなコードが
+
+if (err) { // Error Object
+    task.message(err.message).miss();
+} else {
+    task.pass();
+}</code></pre>
+<pre class="js"><code>// こうなります
+
+task.done(err);</code></pre>
+</section>
+<section id="section-14" class="level2">
+<h2></h2>
+<p>task.done() を使うと、先ほどのコードも</p>
+<pre class="js"><code>    try {
+        throw new Error(&quot;O_o&quot;); // 例外発生!
+        task.pass(); // ここには到達しない
+    } catch (err) {
+        task.message(err.message).miss(); // task.message(&quot;O_o&quot;) を設定
+    }</code></pre>
+<p>このように、シンプルになります</p>
+<pre class="js"><code>    try {
+        throw new Error(&quot;O_o&quot;); // 例外発生!
+        task.pass(); // ここには到達しない
+    } catch (err) {
+        task.done(err);
+    }</code></pre>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.extend" class="level1">
+<h1>task.extend()</h1>
+<pre class="js"><code>function callback(err) { }
+
+var taskCount = 1;
+var task = new Task(taskCount, callback);
+
+task.extend(1); // taskCount += 1;
+task.pass();    // ユーザタスク成功(taskCount は2なので待機する)
+task.pass();    // ユーザタスク成功(taskCount は2なので待機成功で終了する)
+                //      -&gt; callback(null)</code></pre>
+<ul>
+<li>動的に taskCount を +1 するには、<strong>task.extend(1)</strong> とします</li>
+<li>次々にユーザタスクが増えるケースで使います</li>
+</ul>
+<figure>
+<img src="./assets/img/task.extend.png" />
+</figure>
+<!-- ----------------------------------------------------- -->
+
+</section>
+<section id="junction" class="level1">
+<h1>Junction</h1>
+<section id="section-15" class="level2">
+<h2></h2>
+<div style="background: url(./assets/img/junction.png) right top no-repeat">
+<div style="max-width: 600px; min-height:220px">
+<pre class="js"><code>function callback(err) {
+    console.log(&quot;finished&quot;);
+}
+
+var junction = new Task(2, callback);
+
+var task1 = new Task(1, junction);
+var task2 = new Task(1, junction);
+
+task1.pass(); // →junction にも状態変化が通知される
+task2.pass(); // →junction にも状態変化が通知される
+              // →junction の待機も終了する</code></pre>
+</div>
+</div>
+<ul>
+<li>他の Task を集約する Task を <strong>Junction(合流点)</strong> と呼びます</li>
+<li>Junction を重ねる事で Task の階層構造( <strong>Task Tree</strong> )を作る事ができます</li>
+<li>Junction に接続されている Task で <strong>状態変化</strong> が起きると 上位の Junction にも <strong>通知</strong> されます。 さらに上位の Junction がある場合は <strong>次々に伝播</strong> (バブルアップ)します</li>
+</ul>
+</section>
+<section id="section-16" class="level2">
+<h2></h2>
+<div style="background: url(./assets/img/junction.png) right top no-repeat">
+<div style="max-width: 600px; min-height:220px">
+<pre class="js"><code>function callback(err) {
+    console.log(&quot;finished&quot;);
+}
+
+var junction = new Task(2, callback);
+
+var task1 = new Task(1, junction);
+var task2 = new Task(1, junction);
+
+task1.pass(); // →junction にも状態変化が通知される
+task2.pass(); // →junction にも状態変化が通知される
+              // →junction の待機も終了する</code></pre>
+</div>
+</div>
+<ul>
+<li>task1.pass() で task1 と junction の状態が変化します</li>
+<li>task2.pass() で task2 と junction の状態が変化します</li>
+<li>task2.pass() のタイミングで junction の待機も終了し、callback が呼ばれます</li>
+</ul>
+</section>
+<section id="section-17" class="level2">
+<h2></h2>
+<div style="background: url(./assets/img/nested.junction.png) right top no-repeat">
+<div style="max-width: 525px; min-height:320px">
+<pre class="js"><code>function callback(err) {
+    console.log(&quot;finished&quot;);
+}
+
+lv1_junction     = new Task(1, callback);
+  lv2_junction   = new Task(1, lv1_junction);
+    lv3_junction = new Task(2, lv2_junction);
+      lv4_task1  = new Task(1, lv3_junction);
+      lv4_task2  = new Task(1, lv3_junction);
+
+lv4_task1.pass();
+lv4_task2.pass();</code></pre>
+</div>
+</div>
+<ul>
+<li>Junction を使うと Task の階層構造をコンパクトに記述できます</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="task.run" class="level1">
+<h1>Task.run</h1>
+<section id="task.run-と-junction" class="level2">
+<h2>Task.run と Junction</h2>
+<pre class="js"><code>var taskMap = {
+    a: function(task) { task.pass(); },
+    b: function(task) { task.pass(); },
+    c: function(task) { task.pass(); },
+    d: function(task) { task.pass(); },
+};
+
+var junction = new Task(2, callback); // (a &gt; b) + (c + d) が終わったら callback
+
+Task.run(&quot;a &gt; b&quot;, taskMap, junction); // a を実行後に b を実行
+Task.run(&quot;c + d&quot;, taskMap, junction); // c と d を並列実行</code></pre>
+<ul>
+<li><strong>Task.run</strong> は ユーザタスクの前後関係を定義する機能です</li>
+<li>Task の上下関係を定義する <strong>Junction</strong> と Task.run は組み合わせて利用できます</li>
+</ul>
+</section>
+<section id="section-18" class="level2">
+<h2></h2>
+<pre class="js"><code>function callback(err, buffer) {
+}
+
+Task.run(&quot;task_a &gt; task_b + task_c &gt; task_d&quot;, {
+    task_a: function(task) { ... },
+    task_b: function(task) { ... },
+    task_c: function(task) { ... },
+    task_d: function(task) { ... }
+}, callback);</code></pre>
+<ul>
+<li><strong>Task.run</strong> を使うと、ユーザタスクの直列/並列動作をシンプルな記法で定義できます</li>
+<li>ユーザタスク名を <strong><code>&gt;</code></strong> と <strong><code>+</code></strong> でつなぐ事で、ユーザタスクの前後間の流れを定義していきます</li>
+</ul>
+</section>
+<section id="ユーザタスクの並列化" class="level2">
+<h2>ユーザタスクの並列化</h2>
+<pre class="js"><code>
+Task.run(&quot;task_a + task_b&quot;, {
+    task_a: function(task) { task.pass(); },
+    task_b: function(task) { task.pass(); },
+}, callback);</code></pre>
+<ul>
+<li>並列に実行するユーザタスク を <strong><code>+</code></strong> でつなぐと、それらは同時に実行されます</li>
+</ul>
+</section>
+<section id="ユーザタスクの直列化" class="level2">
+<h2>ユーザタスクの直列化</h2>
+<pre class="js"><code>Task.run(&quot;task_a &gt; task_b&quot;, {
+    task_a: function(task) { task.pass(); },
+    task_b: function(task) { task.pass(); },
+}, callback);</code></pre>
+<ul>
+<li>直列に実行するユーザタスクを <strong><code>&gt;</code></strong> でつなぐと、それらは順番に実行されます</li>
+</ul>
+</section>
+<section id="sleepタスク" class="level2">
+<h2>sleepタスク</h2>
+<pre class="js"><code>Task.run(&quot;task_a &gt; 1000 &gt; task_b&quot;, {
+    task_a: function(task) { task.pass(); },
+    task_b: function(task) { task.pass(); },
+}, callback);</code></pre>
+<ul>
+<li>数字を埋め込むと、指定した時間分だけ待機する <strong>何もしない</strong> タスクを動的に生成し実行します</li>
+<li>上記の例では、task_a 実行後に <strong>1000ms</strong> 待機し、その後に task_b を実行します</li>
+</ul>
+</section>
+<section id="直列化したタスクの省略記法" class="level2">
+<h2>直列化したタスクの省略記法</h2>
+<pre class="js"><code>function task_a(task) { task.pass(); }
+function task_b(task) { task.pass(); }
+function task_c(task) { task.pass(); }
+
+// このような直列化したユーザタスクは
+Task.run(&quot;task_a &gt; task_b &gt; task_c&quot;, {
+    task_a: task_a,
+    task_b: task_b,
+    task_c: task_c,
+}, callback);
+
+// 配列を使って短く書くことができます
+Task.run(&quot;&quot;, [task_a, task_b, task_c], callback);</code></pre>
+<ul>
+<li>ユーザタスクの配列を指定すると、順番に実行します</li>
+</ul>
+</section>
+<section id="直列並列sleepを組み合わせる" class="level2">
+<h2>直列/並列/sleepを組み合わせる</h2>
+<pre class="js"><code>Task.run(&quot;a &gt; b + c + 1000 &gt; d&quot;, {
+    a: function(task) { task.pass(); },
+    b: function(task) { task.pass(); },
+    c: function(task) { task.pass(); },
+    d: function(task) { task.pass(); }
+}, callback);</code></pre>
+<ul>
+<li><strong><code>a &gt; b + c + 1000 &gt; d</code></strong> は、ユーザタスク a 〜 d を以下の順番で実行します
+<ol type="1">
+<li>a を実行します</li>
+<li>a の正常終了で、b と c を同時に実行します</li>
+<li>b と c が正常終了しており sleep(1000) が終わっているなら d を実行します</li>
+<li>d が正常終了すると、callback を呼び出します</li>
+</ol></li>
+</ul>
+</section>
+<section id="ユーザタスクに引数を渡す" class="level2">
+<h2>ユーザタスクに引数を渡す</h2>
+<pre class="js"><code>var argumentForUserTask = { a: 1, b: 2, c : 3, d: 4 };
+
+Task.run(&quot;task_a &gt; task_b + task_c &gt; task_d&quot;, {
+    task_a: function(task, arg) { console.log(arg.a); task.pass(); },
+                           ///                /////
+    task_b: function(task, arg) { console.log(arg.b); task.pass(); },
+    task_c: function(task, arg) { console.log(arg.c); task.pass(); },
+    task_d: function(task, arg) { console.log(arg.d); task.pass(); },
+}, function(err, buffer) {
+    if (err) {
+        console.log(&quot;ng&quot;);
+    } else {
+        console.log(&quot;ok&quot;);
+    }
+}, { arg: argumentForUserTask });
+     ////////////////////////</code></pre>
+<ul>
+<li>Task.run から起動されるユーザタスク(task_a 〜 task_d)に引数を渡すには、Task.run の第四引数に <span style="color:gold">options.arg</span> を設定します</li>
+</ul>
+</section>
+<section id="直列化したユーザタスクの失敗" class="level2">
+<h2>直列化したユーザタスクの失敗</h2>
+<pre class="js"><code>Task.run(&quot;task_a &gt; task_b&quot;, {
+    task_a: function(task) { task.miss(); },
+    task_b: function(task) { task.pass(); }, // task_b は実行されません
+}, callback);</code></pre>
+<ul>
+<li><strong>直列</strong> 化したユーザタスクの <strong>途中で失敗</strong> すると後続のユーザタスクは <strong>実行されません</strong></li>
+<li>task_a が失敗した場合は、後続の task_b は実行しません</li>
+</ul>
+</section>
+<section id="並列化したユーザタスクの失敗" class="level2">
+<h2>並列化したユーザタスクの失敗</h2>
+<pre class="js"><code>Task.run(&quot;task_c + task_d + task_e&quot;, {
+    task_c: function(task) {
+        setTimeout(function() { task.miss() }, 1000); // 1000ms 後に失敗
+    },
+    task_d: function(task) { task.pass(); }, // task_c が中断しても task_d は中断しません
+    task_e: function(task) { task.pass(); }, // task_c が中断しても task_e は中断しません
+}, callback);</code></pre>
+<ul>
+<li><strong>並列</strong> 化したユーザタスクの <strong>一部が失敗しても</strong> 、同じグループに属する並列実行ユーザタスクは <strong>中断しません</strong></li>
+<li>task_c が途中で失敗した場合でも、task_d と task_e は中断しません</li>
+</ul>
+</section>
+<section id="バリデーション" class="level2">
+<h2>バリデーション</h2>
+<pre class="js"><code>Task.run(&quot;task_a + task_b + task_c&quot;, {
+    unknown_task_name: function(task) {},
+    bad_argument: function(/* task */) {}
+}, function() {});</code></pre>
+<pre class="js"><code>&gt; TypeError: Task.run(taskRoute, taskMap)</code></pre>
+<ul>
+<li>存在しないタスク名や、引数を受け取らないユーザタスクを検出するとエラーになります</li>
+</ul>
+</section>
+<section id="非同期処理のデータ化" class="level2">
+<h2>非同期処理のデータ化</h2>
+<ul>
+<li>これまで見てきたように、Task.run を使うと、非同期処理を変更に強い形(文字列,DSL)としてデータ化できます</li>
+<li>Task.run を使って仕様変更が入りやすい非同期処理(アニメーションなど)を組むと、将来の仕様変更に対して一定の強度を持たせることができます</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="javascript-vs-promise-vs-task.js" class="level1">
+<h1>JavaScript vs Promise vs Task.js</h1>
+<section id="section-19" class="level2">
+<h2></h2>
+<p>「非同期のユーザタスク <strong>A, B, C, D</strong> を、<br /><strong>A, B のグループ</strong> と <strong>C, D のグループ</strong> に分け、<br /><strong>2つのグループの完了を待つ</strong>」処理を、<br />それぞれの方法で実装してみます</p>
+<ul>
+<li>JavaScript</li>
+<li>jQuery.Deferred</li>
+<li>DOM Promise</li>
+<li>Junction</li>
+<li>Junction + Task.run</li>
+</ul>
+</section>
+<section id="javascript-version" class="level2">
+<h2>JavaScript Version</h2>
+<pre class="js"><code>function waitForAsyncProcesses(finishedCallback) {
+    var remainTaskGroupCount1 = [A, B].length; // 2
+    var remainTaskGroupCount2 = [C, D].length; // 2
+    var remainJunctionTaskCount = 2;
+
+    function A() { setTimeout(function() { doneTaskGroup1(); }, 10);  }
+    function B() { setTimeout(function() { doneTaskGroup1(); }, 100); }
+    function C() { setTimeout(function() { doneTaskGroup2(); }, 20);  }
+    function D() { setTimeout(function() { doneTaskGroup2(); }, 200); }
+
+    function doneTaskGroup1() {
+        if (--remainTaskGroupCount1 &lt;= 0) { junction(); }
+    }
+    function doneTaskGroup2() {
+        if (--remainTaskGroupCount2 &lt;= 0) { junction(); }
+    }
+    function junction() {
+        if (--remainJunctionTaskCount &lt;= 0) { finishedCallback(); }
+    }
+    A(); B(); C(); D();
+}
+waitForAsyncProcesses(function(err) { console.log(&quot;finished&quot;); });</code></pre>
+</section>
+<section id="jquery.deferred-version" class="level2">
+<h2>jQuery.Deferred Version</h2>
+<pre class="js"><code>function waitForAsyncProcesses(finishedCallback) {
+    var promises1 = [A(), B()]; // 2
+    var promises2 = [C(), D()]; // 2
+
+    function A() {
+        var dfd = jQuery.Deferred();
+        setTimeout(function() { dfd.resolve(); }, 10);
+        return dfd.promise();
+    }
+    function B() {
+        var dfd = jQuery.Deferred();
+        setTimeout(function() { dfd.resolve(); }, 100);
+        return dfd.promise();
+    }
+    function C() {
+        var dfd = jQuery.Deferred();
+        setTimeout(function() { dfd.resolve(); }, 20);
+        return dfd.promise();
+    }
+    function D() {
+        var dfd = jQuery.Deferred();
+        setTimeout(function() { dfd.resolve(); }, 200);
+        return dfd.promise();
+    }
+
+    jQuery.when(
+        jQuery.when.apply(null, promises1), // task group1
+        jQuery.when.apply(null, promises2)  // task group2
+    ).done(function() {
+        finishedCallback()
+    });
+}
+waitForAsyncProcesses(function(err) { console.log(&quot;finished&quot;); });</code></pre>
+</section>
+<section id="dom-promise-version" class="level2">
+<h2>DOM Promise Version</h2>
+<pre class="js"><code>function waitForAsyncProcesses(finishedCallback) {
+    function A() {
+        return new Promise(function(resolve, reject) { setTimeout(resolve, 10);  });
+    }
+    function B() {
+        return new Promise(function(resolve, reject) { setTimeout(resolve, 100); });
+    }
+    function C() {
+        return new Promise(function(resolve, reject) { setTimeout(resolve, 20);  });
+    }
+    function D() {
+        return new Promise(function(resolve, reject) { setTimeout(resolve, 200); });
+    }
+    Promise.all([
+        Promise.all([A(), B()]),
+        Promise.all([C(), D()])
+    ]).then(function() {
+        finishedCallback(null);
+    }).catch(function(err) {
+        finishedCallback(err);
+    });
+}
+waitForAsyncProcesses(function(err) { console.log(&quot;finished&quot;); })</code></pre>
+</section>
+<section id="task-junction-version" class="level2">
+<h2>Task( Junction ) Version</h2>
+<pre class="js"><code>function waitForAsyncProcesses(finishedCallback) {
+    var taskMap = {
+            A: function(task) { setTimeout(function() { task.pass(); }, 10);  },
+            B: function(task) { setTimeout(function() { task.pass(); }, 100); },
+            C: function(task) { setTimeout(function() { task.pass(); }, 20);  },
+            D: function(task) { setTimeout(function() { task.pass(); }, 200); },
+        };
+    var junction = new Task(2, finishedCallback);
+    var taskGroup1 = new Task(2, junction);
+    var taskGroup2 = new Task(2, junction);
+
+    taskMap.A(taskGroup1);
+    taskMap.B(taskGroup1);
+    taskMap.C(taskGroup2);
+    taskMap.D(taskGroup2);
+}
+waitForAsyncProcesses(function(err) { console.log(&quot;finished&quot;); });</code></pre>
+</section>
+<section id="task-junction-task.run-version" class="level2">
+<h2>Task( Junction ) + Task.run Version</h2>
+<pre class="js"><code>function waitForAsyncProcesses(finishedCallback) {
+    var taskMap = {
+            A: function(task) { setTimeout(function() { task.pass(); }, 10);  },
+            B: function(task) { setTimeout(function() { task.pass(); }, 100); },
+            C: function(task) { setTimeout(function() { task.pass(); }, 20);  },
+            D: function(task) { setTimeout(function() { task.pass(); }, 200); },
+        };
+    var junction = new Task(2, finishedCallback);
+
+    Task.run(&quot;A + B&quot;, taskMap, junction);
+    Task.run(&quot;C + D&quot;, taskMap, junction);
+}
+
+waitForAsyncProcesses(function(err) { console.log(&quot;finished&quot;); });</code></pre>
+<p>(ε・◇・)з o O ( <strong>スッキリ</strong></p>
+<!-- ----------------------------------------------------- -->
+</section>
+</section>
+<section id="try-it" class="level1">
+<h1>Try it</h1>
+<section id="github" class="level2">
+<h2>github</h2>
+<pre class="sh"><code>https://github.com/uupaa/Task.js</code></pre>
+</section>
+<section id="npm-install" class="level2">
+<h2>npm install</h2>
+<pre class="sh"><code>$ npm install uupaa.task.js</code></pre>
+</section>
+<section id="in-node.js" class="level2">
+<h2>in Node.js</h2>
+<pre class="js"><code>var Task = require(&quot;uupaa.task.js&quot;);
+
+var task = new Task(1, function(err) {
+        console.log(err ? err.message : &quot;ok&quot;);
+    });
+
+task.pass();</code></pre>
+</section>
+<section id="in-browser" class="level2">
+<h2>in Browser</h2>
+<pre class="js"><code>&lt;script src=&quot;uupaa.task.js&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+var task = new Task(1, function(err) {
+        console.log(err ? err.message : &quot;ok&quot;);
+    });
+
+task.pass();
+&lt;/script&gt;</code></pre>
+</section>
+<section id="in-webworkers" class="level2">
+<h2>in WebWorkers</h2>
+<pre class="js"><code>importScripts(&quot;uupaa.task.js&quot;);
+
+var task = new Task(1, function(err) {
+        console.log(err ? err.message : &quot;ok&quot;);
+    });
+
+task.pass();</code></pre>
+</section>
+<section id="in-this-slide" class="level2">
+<h2>in this slide</h2>
+<p>Open browser console, and try this code.</p>
+<pre class="js"><code>new Task(1, function() { console.log(&quot;Hello Task&quot;); }).pass();</code></pre>
+<figure>
+<img src="./assets/img/try.png" />
+</figure>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="まとめ-1" class="level1">
+<h1>まとめ</h1>
+<section id="section-20" class="level2">
+<h2></h2>
+<p>Task.js は以下の特徴を備えています</p>
+<ul>
+<li><strong>様々な環境で動作</strong> します</li>
+<li>構造が <strong>シンプル</strong> で応用が効きます</li>
+<li>既存の構造やユーザタスクを <strong>大きく改変しなくても導入可能</strong> です</li>
+<li>Junction で <strong>上下関係を定義</strong> し、Task.run で <strong>前後関係を定義</strong> できます</li>
+<li>Junction と Task.run を組み合わせて <strong>スッキリ</strong> としたコードが書けます</li>
+</ul>
+</section>
+<section id="section-21" class="level2">
+<h2></h2>
+<p>(ε・◇・)з o O ( Task.js マジ オススメ</p>
+</section>
+</section>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: false,
+
+  // available themes are in /css/theme
+      theme: Reveal.getQueryHash().theme || 'default', 
+  
+  // default/cube/page/concave/zoom/linear/fade/none
+      transition: Reveal.getQueryHash().transition || 'default',
+  
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+  });
+
+</script>
+
+</body>
+</html>

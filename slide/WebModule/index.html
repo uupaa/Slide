@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>新しいモジュールパターン WebModule について</title>
+
+<meta name="description" content="新しいモジュールパターン WebModule について">    
+
+  <meta name="author" content="Web Application Module." />
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+
+<!-- For syntax highlighting -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+
+<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+<script>
+  document.write( '<link rel="stylesheet" href="css/print/' +
+    ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + 
+    '.css" type="text/css" media="print">' );
+</script>
+<script src="./assets/js/Help.js"></script>
+<script src="./assets/js/Task.js"></script>
+
+<!--[if lt IE 9]>
+<script src="lib/js/html5shiv.js"></script>
+<![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+<h1>新しいモジュールパターン WebModule について</h1>
+<h3>Web Application Module.</h3>
+<p>
+<h4><span class="citation" data-cites="uupaa">@uupaa</span> - 2014-03-20</h4>
+</p>
+</section>  
+
+
+<!-- ----------------------------------------------------- -->
+
+<!-- ----------------------------------------------------- -->
+
+<section id="このスライドでは" class="level1">
+<h1>このスライドでは</h1>
+<ul>
+<li>とある Webゲーム開発現場の抱える課題</li>
+<li><a href="https://github.com/uupaa/WebModule/wiki/WebModule">WebModule</a> の導入で解決できること</li>
+</ul>
+<p>について説明します</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+<section id="webゲーム開発現場の現状" class="level1">
+<h1>Webゲーム開発現場の現状</h1>
+<section id="ワークフローが確立されていない" class="level2">
+<h2><strong>ワークフローが確立されていない</strong></h2>
+<ul>
+<li>各自バラバラのスタイルでコードを書いている</li>
+<li>力量がコードにそのまま反映される</li>
+<li>他のプロジェクトにコードを流用できない</li>
+</ul>
+</section>
+<section id="テストやドキュメントの品質がバラバラ" class="level2">
+<h2><strong>テストや<br />ドキュメントの品質がバラバラ</strong></h2>
+<ul>
+<li>テストは基本的に期待できない</li>
+<li>ドキュメントがあったらラッキー</li>
+<li>ドキュメントはあるけれど、中身がスカスカ</li>
+<li>JSDoc で自分好みのテンプレート</li>
+<li>「動けばいい」で、そのまま放置されている</li>
+</ul>
+<p><strong>だって忙しいから</strong></p>
+</section>
+<section id="javascript-で大規模開発" class="level2">
+<h2><strong>JavaScript で大規模開発?</strong></h2>
+<ul>
+<li>チーム開発を理解してて</li>
+<li>エンタープライズ品質を理解してて</li>
+<li>JavaScript を書けて</li>
+<li>エンジニアリングできる人が一個師団?</li>
+<li>中々いないよ、そんな人</li>
+<li>社内に数人いれば良いほうじゃない?</li>
+<li>AltJS を使う/使わない以前の問題</li>
+</ul>
+<p><strong>今のままでは、大規模開発なんて夢です。夢</strong></p>
+</section>
+<section id="それにしても酷いもんだ" class="level2">
+<h2>それにしても酷いもんだ</h2>
+<ul>
+<li>転職する人がコードを残していく</li>
+<li>引継ぎがコストフル。ストレスが半端ない</li>
+<li>それを食わされる新人が心を痛めていく</li>
+<li>ついには<strong>新人の血を吸う</strong>コードが現れる</li>
+</ul>
+</section>
+<section id="ついには" class="level2">
+<h2>ついには</h2>
+<ul>
+<li><strong>逃げ得はゆるさん</strong></li>
+<li><strong>ドキュメントを書かない奴にはコードを書かせるな</strong></li>
+</ul>
+<p>という、大変ツライ状況に発展することも</p>
+</section>
+<section id="こうならないようにするにはどうすれば" class="level2">
+<h2>こうならないようにするには、<br />どうすれば?</h2>
+<p>余計な事に心を乱されず、本質的な作業に集中するためには、どうすればよいのか?</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="課題と願望" class="level1">
+<h1>課題と願望</h1>
+<section id="format-を用意したらどうだろう" class="level2">
+<h2>Format を用意したらどうだろう</h2>
+<ul>
+<li>コードを書く上での雛形を用意しよう</li>
+<li>雛形から開発をスタートできるようにしよう</li>
+</ul>
+</section>
+<section id="テストを何とかしよう" class="level2">
+<h2>テストを何とかしよう</h2>
+<ul>
+<li>テストを書きやすくしよう</li>
+<li>テストランナーを最初から提供しよう</li>
+<li>コマンドを叩くだけで、Node.js, Browser, WebWorkers で自動的にテストが走るようにしよう</li>
+</ul>
+</section>
+<section id="ドキュメントを何とかしよう" class="level2">
+<h2>ドキュメントを何とかしよう</h2>
+<ul>
+<li>忙しい時は仕方ない</li>
+<li>仕方ないので、細切れの時間を使って書いたり見たりできるようにしよう</li>
+<li>JSDoc はソースコードと癒着しているため、忙しいと書けない。いっその事やめよう</li>
+<li>ソースコードとドキュメントを分離しよう</li>
+</ul>
+</section>
+<section id="リファレンスを何とかしよう" class="level2">
+<h2>リファレンスを何とかしよう</h2>
+<ul>
+<li>ブラウザと連携しよう</li>
+<li>ブラウザのDevTools からキーワード検索できるようにしよう</li>
+</ul>
+</section>
+<section id="実行速度や品質をなんとかしよう" class="level2">
+<h2>実行速度や品質をなんとかしよう</h2>
+<ul>
+<li>Closure Compiler の ADVANCED モードでコンパイルしたい</li>
+<li>コードに点数をつけよう</li>
+<li>履歴を見れるようにしよう</li>
+</ul>
+</section>
+<section id="もっと利用してもらいたい" class="level2">
+<h2>もっと利用してもらいたい</h2>
+<ul>
+<li>OSS化しないと、休日に自宅で試す事もできず、結局社内でも利用されないハメに</li>
+<li>せっかく作ったのに、社内に塩漬けにされるのは忍びない</li>
+<li>ドキュメントは GitHub/Wiki(Markdown) に置いたほうがメリットがある</li>
+<li>守りたい部分は従来通り GHE で管理し、外に出せる部分は積極的に出していきたい</li>
+</ul>
+</section>
+<section id="これらの課題は" class="level2">
+<h2>これらの課題は</h2>
+<p>WebModule を導入することで解決できます</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="webmodule-のソリューション" class="level1">
+<h1>WebModule のソリューション</h1>
+<section id="簡単軽量どこでも動く" class="level2">
+<h2>簡単・軽量・どこでも動く</h2>
+<ul>
+<li>モジュールの雛形を提供。簡単に開発を始められる</li>
+<li>モジュールローダーライブラリが不要。余計なオーバーヘッドを発生させない</li>
+<li>Closure Complier で実行速度とサイズを最適化したコンパイルを可能にする</li>
+<li>Node.js, Browser, WebWorkers で動作するコードが書ける</li>
+</ul>
+</section>
+<section id="テストドキュメントカバレッジ" class="level2">
+<h2>テスト・ドキュメント・カバレッジ</h2>
+<ul>
+<li>どこでも動作する事をテストで保証する仕組みを提供する</li>
+<li>1ファイル, 1クラス<br /> テストできないコードは、テスト可能な単位に分解するように仕向ける</li>
+<li>コードとドキュメント(リファレンス)を分離して記述させる</li>
+<li>ドキュメントを GitHub/wiki(Markdown) に記述させる</li>
+<li>JSHint, Plato で静的解析。結果をグラフで表示する</li>
+</ul>
+</section>
+<section id="運用教育引継ぎ" class="level2">
+<h2>運用・教育・引継ぎ</h2>
+<ul>
+<li>フォーマットとマニュアルを提供する。安心して乗っかれるようにする</li>
+<li>JavaScript 初心者でも、コマンドを幾つか叩くだけで、<br /> 「俺スゲー」感を味わえるようにする</li>
+<li>最初の一歩をできるだけ簡単にする</li>
+<li>引継ぎ可能な状態にする。 テストとドキュメントがある状態を維持するように仕向ける</li>
+</ul>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="webmodule-の実装例" class="level1">
+<h1>WebModule の実装例</h1>
+<p><a href="https://github.com/uupaa?tab=repositories">uupaaのリポジトリ</a> に30個ほど</p>
+<p>これからさらに100個ほど増やす予定です</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+<section id="section" class="level1">
+<h1></h1>
+<p>ぜひ、<a href="https://github.com/uupaa/WebModule/wiki/WebModule">WebModule</a> を使ったモジュールを書いてください!</p>
+<hr />
+<p>さらに詳しく知りたい方は</p>
+<ul>
+<li><a href="https://github.com/uupaa/WebModule/wiki/WebModule">WebModule</a></li>
+<li><a href="https://github.com/uupaa/WebModule/wiki/WebModuleWorkflow">WebModuleワークフロー</a></li>
+<li><a href="https://github.com/uupaa/WebModule/wiki/WebModuleCodePattern">WebModuleコードパターン</a></li>
+</ul>
+<p>をごらんください</p>
+</section>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: false,
+
+  // available themes are in /css/theme
+      theme: Reveal.getQueryHash().theme || 'default', 
+  
+  // default/cube/page/concave/zoom/linear/fade/none
+      transition: Reveal.getQueryHash().transition || 'default',
+  
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+  });
+
+</script>
+
+</body>
+</html>

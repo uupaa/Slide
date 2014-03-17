@@ -127,8 +127,8 @@
 
 </section>
 </section>
-<section id="課題と願望" class="level1">
-<h1>課題と願望</h1>
+<section id="課題を解決しよう" class="level1">
+<h1>課題を解決しよう</h1>
 <section id="雛形を用意したらどうだろう" class="level2">
 <h2>雛形を用意したらどうだろう</h2>
 <ul>
@@ -139,7 +139,7 @@
 <section id="テストを何とかしよう" class="level2">
 <h2>テストを何とかしよう</h2>
 <ul>
-<li>テストを書きやすくしよう</li>
+<li>テストを書きやすくしたい</li>
 <li>テストランナーを最初から提供しよう</li>
 <li>コマンドを叩くだけで、Node.js, Browser, WebWorkers で自動的にテストが走るようにしよう</li>
 </ul>
@@ -148,24 +148,24 @@
 <h2>ドキュメントを何とかしよう</h2>
 <ul>
 <li>忙しい時は仕方ない</li>
-<li>仕方ないので、細切れの時間を使って書いたり見たりできるようにしよう</li>
-<li>JSDoc はソースコードと癒着しているため、忙しいと書けない。いっその事やめよう</li>
-<li>ソースコードとドキュメントを分離しよう</li>
+<li>仕方ないので、細切れの時間を使って書いたり見たりできるようにしたい</li>
+<li>JSDoc はコードとドキュメントが癒着しているため、<br /> フィーチャーフリーズした状態のコードは、ドキュメントも更新されずに放置される</li>
+<li>いっその事 JSDoc は止めて、コードとドキュメントを分離すると何かが変わるのではないか</li>
 </ul>
 </section>
 <section id="リファレンスを何とかしよう" class="level2">
 <h2>リファレンスを何とかしよう</h2>
 <ul>
-<li>ブラウザと連携しよう</li>
-<li>ブラウザのDevTools からキーワード検索できるようにしよう</li>
+<li>ブラウザと連携して何かできないか</li>
+<li>ブラウザの DevTools からキーワード検索ができると便利</li>
 </ul>
 </section>
 <section id="実行速度や品質をなんとかしよう" class="level2">
 <h2>実行速度や品質をなんとかしよう</h2>
 <ul>
-<li>Closure Compiler の ADVANCED モードでコンパイルしたい</li>
-<li>コードに点数をつけよう</li>
-<li>履歴を見れるようにしよう</li>
+<li>実行速度を改善するために Closure Compiler の ADVANCED モードでコンパイルしたい</li>
+<li>コードに点数をつけたい</li>
+<li>履歴を見れるようにしたい</li>
 </ul>
 </section>
 <section id="もっと利用してもらいたい" class="level2">
@@ -179,18 +179,17 @@
 </section>
 <section id="これらの課題は" class="level2">
 <h2>これらの課題は</h2>
-<p>WebModule を導入することで解決できます</p>
+<p>WebModule の導入で一部解決できます</p>
 <!-- ----------------------------------------------------- -->
 
 </section>
 </section>
-<section id="webmodule-のソリューション" class="level1">
-<h1>WebModule のソリューション</h1>
+<section id="webmodule-が提供するソリューション" class="level1">
+<h1>WebModule が提供する<br />ソリューション</h1>
 <section id="簡単軽量どこでも動く" class="level2">
 <h2>簡単・軽量・どこでも動く</h2>
 <ul>
 <li>モジュールの雛形を提供。簡単に開発を始められる</li>
-<li>モジュールローダーライブラリが不要。余計なオーバーヘッドを発生させない</li>
 <li>Closure Complier で実行速度とサイズを最適化したコンパイルを可能にする</li>
 <li>Node.js, Browser, WebWorkers で動作するコードが書ける</li>
 </ul>
@@ -222,6 +221,25 @@
 </ul>
 <hr />
 <p>作業手順がチーム毎にバラバラな状態では、<br />火消しのために増員してもすぐには作業できる状態になりません。<br />コミュニケーションロスが増えるだけで、<br />かえって逆効果になります</p>
+<!-- ----------------------------------------------------- -->
+
+</section>
+</section>
+<section id="解決できないこと" class="level1">
+<h1>解決できないこと</h1>
+<section id="一緒にビルドできないコードがある" class="level2">
+<h2>一緒にビルドできないコードがある</h2>
+<ul>
+<li><a href="https://code.google.com/p/closure-compiler/">ADVANCEDモード</a>に対応していないコードは壊れます</li>
+<li><a href="https://github.com/uupaa/WebModule/wiki/package.json#wiki-build">ビルド対象のコードが不明</a> な場合もビルドできません</li>
+<li>一緒にビルドできない場合は、これまで通り、個別に読み込んで利用することに</li>
+</ul>
+<pre class="js"><code>&lt;script src=&quot;underscore.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;WebModules.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;App.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+<pre class="js"><code>var _ = require(&quot;underscore.min.js&quot;);
+var Lib = require(&quot;./WebModules.min.js&quot;);
+var App = require(&quot;./App.min.js&quot;);</code></pre>
 <!-- ----------------------------------------------------- -->
 
 </section>

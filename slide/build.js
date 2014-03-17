@@ -13,7 +13,7 @@ var _CONSOLE_COLOR = {
 
 var argv    = process.argv.slice(2); // [slide-name]
 var Process = require("child_process");
-var slideName = argv[0] || "";
+var slideName = argv[0] || "WebModule";
 
 if (!slideName) {
     console.log(_CONSOLE_COLOR._RED + _USAGE + _CONSOLE_COLOR._CLEAR);

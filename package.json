@@ -4,8 +4,9 @@
   "description":    "",
   "main":           "",
   "scripts": {
-    "watch":        "node node_modules/uupaa.watch.js --verbose --action build --delay 100 ./slide/WebModule.md",
-    "build":        "pandoc --section-divs -s -t html5 --template ./slide/WebModule/template.html ./slide/WebModule.md -o ./slide/WebModule/index.html"
+    "watch":        "node node_modules/uupaa.watch.js --verbose --action build --delay 1 ./slide/WebModule.md",
+    "build":        "pandoc --section-divs -s -t html5 --template ./slide/WebModule/template.html ./slide/WebModule.md -o ./slide/WebModule/index.html",
+    "show":         "open ./slide/WebModule/index.html"
   },
   "dependencies": {
   },

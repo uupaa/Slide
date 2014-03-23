@@ -21,6 +21,8 @@
   },
   "devDependencies": {
     "uupaa.valid.js":  "",
+    "uupaa.help.js":   "",
+    "uupaa.task.js":   "",
     "uupaa.watch.js":  ""
   },
   "repository": {

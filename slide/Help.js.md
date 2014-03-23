@@ -185,6 +185,31 @@ Help.js は、WebModule の一部です。
 - [WebModuleワークフロー][]
 - [WebModuleコードパターン][]
 
+---
+
+##
+
+このスライドにも  
+Help.js が組み込まれています。
+
+----
+
+<small>
+Command + Option + I や、  
+コンテキストメニューの 要素の検証 から DevTools を開き、  
+以下のコマンドを試してみてください。
+</small>
+
+```sh
+> Array.prototype.reduce.help
+
+> Object.freeze.help
+
+> Help("Task.flatten")
+
+> Help.help
+
+```
 
 
 

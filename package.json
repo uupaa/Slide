@@ -4,9 +4,18 @@
   "description":    "",
   "main":           "",
   "scripts": {
-    "watch":        "node node_modules/uupaa.watch.js --verbose --action build --delay 1 ./slide/WebModule.md",
-    "build":        "pandoc --section-divs -s -t html5 --template ./slide/WebModule/template.html ./slide/WebModule.md -o ./slide/WebModule/index.html",
-    "show":         "open ./slide/WebModule/index.html"
+    "watch":            "npm run watch-webmodule",
+    "watch-webmodule":  "node node_modules/uupaa.watch.js --verbose --action build-webmodule --delay 1 ./slide/WebModule.md",
+    "watch-help":       "node node_modules/uupaa.watch.js --verbose --action build-help --delay 1 ./slide/Help.js.md",
+    "watch-task":       "node node_modules/uupaa.watch.js --verbose --action build-task --delay 1 ./slide/Task.js.md",
+    "build":            "npm run build-webmodule",
+    "build-webmodule":  "pandoc --section-divs -s -t html5 --template ./slide/WebModule/template.html ./slide/WebModule.md -o ./slide/WebModule/index.html",
+    "build-help":       "pandoc --section-divs -s -t html5 --template ./slide/Help.js/template.html ./slide/Help.js.md -o ./slide/Help.js/index.html",
+    "build-task":       "pandoc --section-divs -s -t html5 --template ./slide/Task.js/template.html ./slide/Task.js.md -o ./slide/Task.js/index.html",
+    "show":             "npm run show-webmodule",
+    "show-webmodule":   "open ./slide/WebModule/index.html",
+    "show-help":        "open ./slide/Help.js/index.html",
+    "show-task":        "open ./slide/Task.js/index.html"
   },
   "dependencies": {
   },

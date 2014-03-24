@@ -64,10 +64,13 @@
 <h2></h2>
 <p>ブラウザと連携して動作する、<br />まったく新しい<br />オンラインリファレンス機能を<br />提供します。</p>
 </section>
-<section id="つの機能から構成されています" class="level2">
-<h2>2つの機能から構成されています</h2>
+</section>
+<section id="help.js-には" class="level1">
+<h1>Help.js には</h1>
+<section id="つの目的があります" class="level2">
+<h2>2つの目的があります</h2>
 <ol type="1">
-<li><p>ブラウザの DevTools で機能する<br /> <strong>Help コマンドを提供</strong>します</p></li>
+<li><p>DevTools コンソールで機能する<br /> <strong>Help コマンドを提供</strong>します</p></li>
 <li><p>ソースコードと<strong>ドキュメントを分離</strong>し、<br /> ドキュメントが死蔵されずに、<br /> <strong>更新され続ける環境</strong>を提供します</p></li>
 </ol>
 </section>
@@ -76,7 +79,7 @@
 <h1>Help コマンドは</h1>
 <section id="関数の内容をダンプします" class="level2">
 <h2>関数の内容をダンプします</h2>
-<p><strong>関数オブジェクト.help</strong> または<br /><strong>Help(関数オブジェクト)</strong> とタイプすると、<br />関数を文字列としてダンプします。</p>
+<p><strong>Foo.help</strong> で、<br />Fooクラスのコンストラクタをダンプします。</p>
 <pre>
 > Foo.help
 
@@ -86,11 +89,11 @@
   }
 </pre>
 
-<p>引数・型・戻り値などの情報を<br />素早く確認できます。</p>
+<p>引数・型・戻り値などの情報を<br /><strong>クイックに確認</strong>できます。</p>
 </section>
-<section id="検索用のリンクを表示します" class="level2">
-<h2>検索用のリンクを表示します</h2>
-<p><strong>Foo.help</strong> とタイプすると、<br />GitHub/wiki にある Foo.js の<br />リファレンスページと、<br />Google 検索用のURLを提示します。</p>
+<section id="リンクを表示します" class="level2">
+<h2>リンクを表示します</h2>
+<p>Foo.js のリファレンスページと、<br />Google 検索用のURLを提示します。</p>
 <pre>
 > Foo.help
 
@@ -101,11 +104,10 @@
 </pre>
 
 
-
 </section>
-<section id="いまいち使い方が分からないネイティブ-api-のこともすぐに調べられます" class="level2">
-<h2>いまいち使い方が分からない<br />ネイティブ API のことも<br />すぐに調べられます</h2>
-<p><strong>Array.prototype.every.help</strong>とタイプすると<br /><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every">Array#every</a> を解説した MDN のページと<br />Google で検索するためのURLを提示します。</p>
+<section id="ネイティブ-api-を調べられます" class="level2">
+<h2>ネイティブ API を調べられます</h2>
+<p><strong>Array.prototype.every.help</strong>で<br /><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every">Array#every</a> を解説した MDN のページと<br />Google で検索するためのURLを提示します。</p>
 <pre>
 > Array.prototype.every.help
 
@@ -119,86 +121,32 @@
 
 
 </section>
-<section id="一般的なキーワードも検索できます" class="level2">
-<h2>一般的なキーワードも検索できます</h2>
-<p><strong>Help(&quot;調べたいキーワード&quot;)</strong> で<br />一般的なキーワードで検索も可能です。</p>
+<section id="コンテキスト依存の検索ができます" class="level2">
+<h2>コンテキスト依存の検索ができます</h2>
+<p><strong>Help(&quot;キーワード&quot;)</strong> で<br />global や window オブジェクト以下から<br />一致するプロパティや関数を検索します。</p>
+<p><br /> キーワードが見つからない場合は<br />Google の検索リンクを表示します。</p>
 <pre>
-> Help("助けてドラえもん")
+> Help("Array.isHoge")
 
-Google.search( 助けてドラえもん ):
-    <a href="http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=%E5%8A%A9%E3%81%91%E3%81%A6%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93">http://www.google.com/search?q=%E5%8A%A9%E3%81%91%E3%81%A6%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93</a>
+Google.search( Array.isHoge ):
+    <a href="http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Array.isHoge">http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Array.isHoge</a>
 </pre>
 
 
 
-
-
-
-
-
 </section>
 </section>
-<section id="ドキュメントを分離する" class="level1">
-<h1>ドキュメントを分離する</h1>
-<section id="なぜ" class="level2">
-<h2>なぜ?</h2>
-<ul>
-<li>どこからでもドキュメントを見れるようにしたい</li>
-<li>コードに手を入れずに<strong>ドキュメントだけを更新したい</strong>
-<ul>
-<li>後からドキュメントを書きたい</li>
-<li>5〜10分の断片化された時間でドキュメントを更新したい</li>
-</ul></li>
-</ul>
+<section id="help.js-はコードとドキュメントの分離を促進します" class="level1">
+<h1>Help.js はコードと<br />ドキュメントの分離を促進します</h1>
+<section id="section-1" class="level2">
+<h2></h2>
+<p>モジュールの作者、またはユーザが<br />ドキュメントを<br /><img src="../../assets/img/cloud.png" /> <strong>いつでもどこからでも</strong><br />書きやすくするために<br />ソースコードとドキュメントを分離します。</p>
 </section>
-<section id="jsdocだとダメなの-なぜ分けるの" class="level2">
-<h2>JsDocだとダメなの? なぜ分けるの?</h2>
+<section id="このようにします" class="level2">
+<h2>このようにします</h2>
 <ul>
-<li>コードとドキュメントの<strong>編集履歴を分けたい</strong>
-<ul>
-<li>コードとドキュメントを疎結合にしたい</li>
-<li>骨組み部分を先に書いてユーザに展開し、<br /> 細部については後からしっかり書きたい</li>
-</ul></li>
-<li>コードの見通しを悪化させたくない
-<ul>
-<li>説明を増やすとコードの見通しが悪化するジレンマ</li>
-</ul></li>
-<li>ドキュメントをググれないプロダクトは死ぬ
-<ul>
-<li>NDAだったり、社内限定公開だったりして、<br /> 土日や移動中に見れないと<br /> <strong>ちょっと試そうという気にならない</strong></li>
-</ul></li>
-</ul>
-</section>
-<section id="どうやって分離するの" class="level2">
-<h2>どうやって分離するの?</h2>
-<ul>
-<li>設置場所やドキュメントの書式を決めてしまう
-<ul>
-<li>公開可能な <strong>ソースコードは GitHub に</strong></li>
-<li><strong>ドキュメントは GitHub/wiki に </strong></li>
-<li><strong>ドキュメントの書式は Markdown 一択で </strong></li>
-<li>履歴は git や GitHub の機能を利用する</li>
-</ul></li>
-<li>コードとリポジトリを連携させる
-<ul>
-<li>コードに<strong>リポジトリのURLを埋め込む</strong>。<a href="https://github.com/uupaa/Help.js">Help.js</a> から参照可能にする</li>
-</ul></li>
-<li>コードにキーワードを埋め込む
-<ul>
-<li>関数やメソッドに @<a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">help 属性</a> を<strong>キーワードとして埋め込む</strong></li>
-<li>関数の<strong>内側に、引数の型や戻り値の情報を埋め込む</strong></li>
-</ul></li>
-</ul>
-</section>
-<section id="実際の分離作業はどんな感じなの" class="level2">
-<h2>実際の分離作業はどんな感じなの?</h2>
-<ul>
-<li>GitHub/wiki に新しくページを作成
-<ul>
-<li>後ほどドキュメントを記述</li>
-</ul></li>
-<li>コードにリポジトリのURLを埋め込む</li>
-<li>各 function の内側に<br /> <span class="citation" data-cites="help">@help</span> や <span class="citation" data-cites="arg">@arg</span>, <span class="citation" data-cites="ret">@ret</span> などの <a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">属性</a> を埋め込む</li>
+<li>GitHub にリポジトリと wikiページを作成し</li>
+<li>リポジトリのURLと @<a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">help 属性</a> を埋め込みます</li>
 </ul>
 <pre class="js"><code>+   Class.repository = &quot;https://github.com/.../Class&quot;;
 
@@ -218,7 +166,7 @@ Google.search( 助けてドラえもん ):
 <section id="さらに詳しく知りたい方は" class="level1">
 <h1>さらに詳しく知りたい方は…</h1>
 <hr />
-<section id="section-1" class="level2">
+<section id="section-2" class="level2">
 <h2></h2>
 <p><a href="https://github.com/uupaa/Help.js">Help.js</a> のドキュメントをご覧ください。</p>
 <hr />
@@ -230,7 +178,7 @@ Google.search( 助けてドラえもん ):
 </ul>
 <hr />
 </section>
-<section id="section-2" class="level2">
+<section id="section-3" class="level2">
 <h2></h2>
 <p>このスライドにも<br />Help.js が組み込まれています。</p>
 <hr />

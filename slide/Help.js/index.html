@@ -48,7 +48,7 @@
 <h1>Help.js</h1>
 <h3>Online Reference</h3>
 <p>
-<h4><span class="citation" data-cites="uupaa">@uupaa</span> - 2014-03-22</h4>
+<h4><span class="citation" data-cites="uupaa">@uupaa</span> - 2014-03-28</h4>
 </p>
 </section>  
 
@@ -143,10 +143,7 @@ Google.search( 助けてドラえもん ):
 <section id="なぜ" class="level2">
 <h2>なぜ?</h2>
 <ul>
-<li><strong>どこからでも</strong>ドキュメントを<strong>見れる状態にしたい</strong>
-<ul>
-<li>モバイルブラウザで見たい</li>
-</ul></li>
+<li>どこからでもドキュメントを見れるようにしたい</li>
 <li>コードに手を入れずに<strong>ドキュメントだけを更新したい</strong>
 <ul>
 <li>後からドキュメントを書きたい</li>
@@ -159,19 +156,16 @@ Google.search( 助けてドラえもん ):
 <ul>
 <li>コードとドキュメントの<strong>編集履歴を分けたい</strong>
 <ul>
-<li>コードとドキュメントを別々に書きたい</li>
-<li><strong>後からドキュメントを書きたい</strong></li>
+<li>コードとドキュメントを疎結合にしたい</li>
+<li>骨組み部分を先に書いてユーザに展開し、<br /> 細部については後からしっかり書きたい</li>
 </ul></li>
 <li>コードの見通しを悪化させたくない
 <ul>
-<li>説明を増やすとコードの見通しが簡単に悪化する</li>
-<li>脳内バッファを沢山消費する長いコードがつらい。<br /> <strike>楽天メソッドつらい</strike></li>
+<li>説明を増やすとコードの見通しが悪化するジレンマ</li>
 </ul></li>
-<li>ググれないドキュメントは存在しないも同然
+<li>ドキュメントをググれないプロダクトは死ぬ
 <ul>
-<li><a href="http://usejsdoc.org/">JsDoc</a> で生成し、社内に配置するパターンがツライ</li>
-<li><strong>ググれない物は利用されない</strong>の法則で、無意識に敬遠してしまう</li>
-<li>土日や移動中に見れないと<strong>ちょっと試そうという気にならない</strong></li>
+<li>NDAだったり、社内限定公開だったりして、<br /> 土日や移動中に見れないと<br /> <strong>ちょっと試そうという気にならない</strong></li>
 </ul></li>
 </ul>
 </section>
@@ -180,8 +174,9 @@ Google.search( 助けてドラえもん ):
 <ul>
 <li>設置場所やドキュメントの書式を決めてしまう
 <ul>
-<li><strong>ソースコードは GitHub</strong> に、 <strong>ドキュメントは GitHub/wiki</strong> に</li>
-<li><strong>ドキュメントの書式は Markdown</strong> 一択で</li>
+<li>公開可能な <strong>ソースコードは GitHub に</strong></li>
+<li><strong>ドキュメントは GitHub/wiki に </strong></li>
+<li><strong>ドキュメントの書式は Markdown 一択で </strong></li>
 <li>履歴は git や GitHub の機能を利用する</li>
 </ul></li>
 <li>コードとリポジトリを連携させる

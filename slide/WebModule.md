@@ -15,19 +15,30 @@
 uupaa による uupaa のための  
 モジュールを量産する枠組みです。
 
-##
+<br />
+
+シンプルで  
+テストがあり  
+どこでも動作し  
+カバレッジがあり  
+どこでもドキュメントが書ける  
+そんな部品群を量産するための  
+**俺得**なモジュールシステムです。
+
+## 
 
 「**どこでも動く**JSの**部品を作りたい**けど、  
-どこから手を付ければいいのか分からない」  
-という方にもお勧めできるかと思います。
+どこから手を付ければ、  
+**どうすればいいのか分からない**」な、  
+**型なしな人にもお勧め**できるかと思います。
 
 <br />
-予め用意されているモジュールの雛形と  
+あらかじめ用意されているモジュールの雛形と  
 ツールの使い方の流れを学ぶことで、  
 **最初の一歩を踏み出せるかもしれません。**
 
 
-## モザイクでクラウドな<br />フレームワークです
+## モザイクなフレームワークです
 
 WebModule は、  
 Browser + [npm][] + [GitHub][] + [Markdown][] + [ClosureCompiler][] + [JSHint][] + [Plato][] + [Help.js]
@@ -39,15 +50,15 @@ Browser + [npm][] + [GitHub][] + [Markdown][] + [ClosureCompiler][] + [JSHint][]
 
 ![](../../assets/img/gears.png)
 
-## 設置場所や<br />ドキュメントの書式が決まっています
+## 型(きまりごと)があります
 
 - 公開可能な **ソースコードは GitHub と npm **に置きます
     - 公開できないものは、今までどおり別の場所で管理します
 - **ドキュメントは GitHub/wiki** に書きます
-- **ドキュメントの書式は Markdown** 一択です
+- **ドキュメントの書式は Markdown** です
 
-履歴はソースコードと  
-ドキュメントで別管理します。
+ソースコードとドキュメントで  
+履歴を別々に管理します。
 
 - ソースコードの履歴は git に任せます
 - ドキュメントの履歴は GitHub/wiki の機能を利用します
@@ -63,6 +74,12 @@ WebModule は、[Help.js][] による
 [JsDoc][] は使いません。  
 (併用は可能です)
 
+<hr />
+
+この部分は、  
+これまでの定型や定説に異を唱える  
+チャレンジです。
+
 ## コードを健全に保つ仕組みを提供します
 
 <br />
@@ -77,7 +94,7 @@ WebModule は、[Help.js][] による
 
 
 
-## どこでも動くコードになります
+## どこでも動く ![](../../assets/img/cloud.png) コードになります
 
 <br />
 **6つの環境で一斉にテスト**します。
@@ -115,10 +132,10 @@ $ npm install
 ```sh
 $ edit ../lib/MyModule.js
 
-$ npm run watch             <- ../lib/MyModule.js を監視して自動ビルド
-$ npm run build             <- ../lib/MyModule.js をビルド
-$ npm run test              <- ../lib/MyModule(.min).js をテスト
-$ npm run lint              <- ../lib/MyModule.js を評価
+$ npm run watch             <- lib/MyModule.js を監視して自動ビルド
+$ npm run build             <- release/MyModule.min.js をビルド
+$ npm run test              <- lib/MyModule.js と release/MyModule.min.js をテスト
+$ npm run lint              <- lib/MyModule.js を評価
 
 $ npm run build-release     <- モジュールの依存関係を解決した状態でリリースビルド
 ```
@@ -146,7 +163,8 @@ require("../node_modules/module1.js/lib/WebModule1.js");
 require("../lib/MyWebModule.js");
 ```
 
-<small>パスを解決できる環境では、モジュールのパスを短く記述できます。</small>
+<small>パスを解決できる環境(Node.js)では、<br />
+モジュールのパスを短く記述できます。</small>
 
 ```js
 require("module1.js");
@@ -167,24 +185,34 @@ require("../lib/MyWebModule.js");
 - [WebModule][]
 - [WebModuleワークフロー][]
 - [WebModuleコードパターン][]
-
-
-また、[Help.js][] の  
-ドキュメントもご覧ください。
-
+- [Help.js][]
 
 ##
 
-次のコマンドで、  
+npm search コマンドで、  
 WebModule をベースとした  
 モジュールを検索できます。
 
 ```sh
 $ npm search webmodule
+
+uupaa.browser.js       Detect spec by the browser behavior. =uupaa   2014-03-26 0.8.14
+uupaa.device.js        Detect spec by the Device catalog.   =uupaa   2014-03-26 0.9.0
+uupaa.eventlistener.js EventListener Class.                 =uupaa   2014-03-30 0.0.6
+uupaa.help.js          Online reference.                    =uupaa   2014-03-26 0.8.14
+uupaa.minify.js        JavaScript source code minifier.     =uupaa   2014-03-31 0.8.35
+uupaa.spec.js          Spec detection.                      =uupaa   2014-03-27 0.9.2
+uupaa.task.js          Counter based task executor.         =uupaa   2014-03-23 0.8.22
+uupaa.test.js          Test Runner.                         =uupaa   2014-03-29 0.8.14
+uupaa.uri.js           URI parse and build.                 =uupaa   2014-03-31 0.8.8
+uupaa.useragent.js     Detect spec by the UserAgent.        =uupaa   2014-03-26 0.9.1
+uupaa.valid.js         Validate functions.                  =uupaa   2014-03-23 0.8.4
+uupaa.watch.js         Watch directory and files.           =uupaa   2014-03-18 0.8.6
+webmodule              The WebModule is module templ...     =uupaa   2014-03-31 0.0.11
+  :
 ```
 
----
-実装例は、  
+その他の実装例は、  
 こちらの[リポジトリ](https://github.com/uupaa?tab=repositories)をご覧ください。
 
 

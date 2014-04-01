@@ -69,10 +69,54 @@
 <h1>Help.js には</h1>
 <section id="つの目的があります" class="level2">
 <h2>2つの目的があります</h2>
+<p><br /></p>
 <ol type="1">
-<li><p>DevTools コンソールで機能する<br /> <strong>Help コマンドを提供</strong>します</p></li>
-<li><p>ソースコードと<strong>ドキュメントを分離</strong>し、<br /> ドキュメントが死蔵されずに、<br /> <strong>更新され続ける環境</strong>を提供します</p></li>
+<li><p>ソースコードと<strong>ドキュメントを分離</strong>します</p>
+<ul>
+<li>ドキュメントが死蔵されず<br /> 更新/拡充されるサイクルを目指します</li>
+</ul></li>
+<li><p>DevTools コンソールで機能する<br /> <strong>Help コマンド</strong>を提供します</p></li>
 </ol>
+</section>
+</section>
+<section id="ドキュメントの分離は" class="level1">
+<h1>ドキュメントの分離は</h1>
+<section id="section-1" class="level2">
+<h2></h2>
+<p>モジュールの作者が<br />ドキュメントを<br /><img src="../../assets/img/cloud.png" /> <strong>いつでもどこからでも</strong><br />書きやすくし、</p>
+<hr />
+<p>ユーザが<br />ドキュメントを<br /><img src="../../assets/img/cloud.png" /> <strong>いつでもどこからでも</strong><br />読めるようにするものです</p>
+</section>
+</section>
+<section id="ドキュメントを分離するために" class="level1">
+<h1>ドキュメントを分離するために</h1>
+<section id="リファレンスは-web-に置きます" class="level2">
+<h2>1. リファレンスは Web に置きます</h2>
+<p><br /> GitHub にリポジトリと<br />wiki ページを作成します</p>
+<p><br /> <strong>社外に置けるものは</strong><br /><strong>社外に置きます</strong></p>
+</section>
+<section id="ソースコードにキーワードを埋め込みます" class="level2">
+<h2>2. ソースコードに<br />キーワードを埋め込みます</h2>
+<ul>
+<li>リポジトリのURLと @<a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">help 属性</a> をコードに埋め込みます</li>
+</ul>
+<pre class="js"><code>+   Class.repository = &quot;https://github.com/.../Class&quot;;
+
+    // --- interface -------------------------------------------
+-   function Class(value) {
++   function Class(value) { // @help: Class
+    }
+
+    // --- implement -------------------------------------------
+-   function Class_method() {
++   function Class_method() { // @help: Foo#value
+    }</code></pre>
+</section>
+<section id="ブラウザからリファレンスを引けるようにしました" class="level2">
+<h2>3. ブラウザからリファレンスを<br />引けるようにしました</h2>
+<ul>
+<li>Help コマンドを使ってください<br /> (次のページで説明します)</li>
+</ul>
 </section>
 </section>
 <section id="help-コマンドは" class="level1">
@@ -134,31 +178,6 @@ Google.search( Array.isHoge ):
 
 
 
-</section>
-</section>
-<section id="help.js-はコードとドキュメントの分離を促進します" class="level1">
-<h1>Help.js はコードと<br />ドキュメントの分離を促進します</h1>
-<section id="section-1" class="level2">
-<h2></h2>
-<p>モジュールの作者、またはユーザが<br />ドキュメントを<br /><img src="../../assets/img/cloud.png" /> <strong>いつでもどこからでも</strong><br />書きやすくするために<br />ソースコードとドキュメントを分離します。</p>
-</section>
-<section id="このようにします" class="level2">
-<h2>このようにします</h2>
-<ul>
-<li>GitHub にリポジトリと wikiページを作成し</li>
-<li>リポジトリのURLと @<a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">help 属性</a> を埋め込みます</li>
-</ul>
-<pre class="js"><code>+   Class.repository = &quot;https://github.com/.../Class&quot;;
-
-    // --- interface -------------------------------------------
--   function Class(value) {
-+   function Class(value) { // @help: Class
-    }
-
-    // --- implement -------------------------------------------
--   function Class_method() {
-+   function Class_method() { // @help: Foo#value
-    }</code></pre>
 <!-- ----------------------------------------------------- -->
 
 </section>

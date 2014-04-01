@@ -12,10 +12,10 @@
 
 ##
 
-ブラウザと連携して動作する、  
+**ブラウザと連携して動作する**  
 まったく新しい  
-オンラインリファレンス機能を  
-提供します。
+**オンラインリファレンス機能**を  
+提供します
 
 # Help.js には
 
@@ -54,18 +54,19 @@
 
 # ドキュメントを分離するために
 
-## 1. リファレンスは Web に置きます
+## ( 1 ). リファレンスは Web に置きます
 
 <br />
 GitHub にリポジトリと  
 wiki ページを作成します
 
-<br />
-**社外に置けるものは**  
+<hr />
+
+社外に置けるものは  
 **社外に置きます**
 
 
-## 2. ソースコードに<br />キーワードを埋め込みます
+## ( 2 ). ソースコードに<br />キーワードを埋め込みます
 
 - リポジトリのURLと @[help 属性][] をコードに埋め込みます
 
@@ -83,10 +84,12 @@ wiki ページを作成します
     }
 ```
 
-## 3. ブラウザからリファレンスを<br />引けるようにしました
+## ( 3 ). ブラウザからリファレンスを<br />引けるようにしました
 
-- Help コマンドを使ってください  
-  (次のページで説明します)
+<br />
+Help コマンドを使うことで  
+リファレンスページに素早くたどり着けます
+
 
 
 
@@ -94,8 +97,10 @@ wiki ページを作成します
 
 ## 関数の内容をダンプします
 
+<br />
+
 **Foo.help** で、  
-Fooクラスのコンストラクタをダンプします。
+Fooクラスのコンストラクタをダンプします
 
 <pre>
 > Foo.help
@@ -107,19 +112,26 @@ Fooクラスのコンストラクタをダンプします。
 </pre>
 
 引数・型・戻り値などの情報を  
-**クイックに確認**できます。
+**クイックに確認**できます
 
 
-## リンクを表示します
+## リンクを提示します
 
-Foo.js のリファレンスページと、  
-Google 検索用のURLを提示します。
+<br />
+
+Foo.js の**リファレンスページ**と  
+**リポジトリの URL** を提示します。
+
+Web 全体から検索するための  
+**Google 検索用の URL** も提示します
 
 <pre>
 > Foo.help
 
-  GitHub wiki page:
+  Reference:
       <a href="https://github.com/uupaa/Foo.js/wiki/Foo#wiki-foo">https://github.com/uupaa/Foo.js/wiki/Foo#wiki-foo</a>
+  Repository:
+      <a href="https://github.com/uupaa/Foo.js/">https://github.com/uupaa/Foo.js/</a>
   Google.search( Foo ):
       <a href="http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Foo">http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Foo</a>
 </pre>
@@ -127,9 +139,11 @@ Google 検索用のURLを提示します。
 
 ## ネイティブ API を調べられます
 
-**Array.prototype.every.help**で  
-[Array#every](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every) を解説した MDN のページと  
-Google で検索するためのURLを提示します。
+<br />
+
+**Array.prototype.every.help** とすると  
+[Array#every](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every) を解説した **MDN のリンク**と  
+**Google 検索用の URL** を提示します
 
 <pre>
 > Array.prototype.every.help
@@ -147,11 +161,12 @@ Google で検索するためのURLを提示します。
 
 **Help("キーワード")** で  
 global や window オブジェクト以下から  
-一致するプロパティや関数を検索します。
+キーワードと一致する関数や  
+プロパティを検索し  
+リンクを提示します。
 
-<br />
 キーワードが見つからない場合は  
-Google の検索リンクを表示します。
+**Google 検索用の URL** を提示します
 
 <pre>
 > Help("Array.isHoge")
@@ -170,31 +185,31 @@ Google.search( Array.isHoge ):
 
 ##
 
-[Help.js][] のドキュメントをご覧ください。
+[Help.js][] のドキュメントをご覧ください
 
 ----
 
-Help.js は、WebModule の一部です。  
+Help.js は [WebModule][] で書かれています
+
+<br />
 こちらのドキュメントも  
-合わせて参照してください。
+合わせて参照してください
 
 - [WebModule][]
 - [WebModuleワークフロー][]
 - [WebModuleコードパターン][]
 
----
-
 ##
 
 このスライドにも  
-Help.js が組み込まれています。
+Help.js が組み込まれています
 
 ----
 
 <small>
 Command + Option + I や、  
 コンテキストメニューの 要素の検証 から DevTools を開き、  
-以下のコマンドを試してみてください。
+以下のコマンドを試してみてください
 </small>
 
 ```sh

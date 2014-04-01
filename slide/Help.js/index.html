@@ -62,7 +62,7 @@
 <hr />
 <section id="section" class="level2">
 <h2></h2>
-<p>ブラウザと連携して動作する、<br />まったく新しい<br />オンラインリファレンス機能を<br />提供します。</p>
+<p><strong>ブラウザと連携して動作する</strong><br />まったく新しい<br /><strong>オンラインリファレンス機能</strong>を<br />提供します</p>
 </section>
 </section>
 <section id="help.js-には" class="level1">
@@ -91,12 +91,14 @@
 <section id="ドキュメントを分離するために" class="level1">
 <h1>ドキュメントを分離するために</h1>
 <section id="リファレンスは-web-に置きます" class="level2">
-<h2>1. リファレンスは Web に置きます</h2>
+<h2>( 1 ). リファレンスは Web に置きます</h2>
 <p><br /> GitHub にリポジトリと<br />wiki ページを作成します</p>
-<p><br /> <strong>社外に置けるものは</strong><br /><strong>社外に置きます</strong></p>
+<hr />
+
+<p>社外に置けるものは<br /><strong>社外に置きます</strong></p>
 </section>
 <section id="ソースコードにキーワードを埋め込みます" class="level2">
-<h2>2. ソースコードに<br />キーワードを埋め込みます</h2>
+<h2>( 2 ). ソースコードに<br />キーワードを埋め込みます</h2>
 <ul>
 <li>リポジトリのURLと @<a href="https://github.com/uupaa/Help.js/wiki/AddHelp#attribute">help 属性</a> をコードに埋め込みます</li>
 </ul>
@@ -113,17 +115,16 @@
     }</code></pre>
 </section>
 <section id="ブラウザからリファレンスを引けるようにしました" class="level2">
-<h2>3. ブラウザからリファレンスを<br />引けるようにしました</h2>
-<ul>
-<li>Help コマンドを使ってください<br /> (次のページで説明します)</li>
-</ul>
+<h2>( 3 ). ブラウザからリファレンスを<br />引けるようにしました</h2>
+<p><br /> Help コマンドを使うことで<br />リファレンスページに素早くたどり着けます</p>
 </section>
 </section>
 <section id="help-コマンドは" class="level1">
 <h1>Help コマンドは</h1>
 <section id="関数の内容をダンプします" class="level2">
 <h2>関数の内容をダンプします</h2>
-<p><strong>Foo.help</strong> で、<br />Fooクラスのコンストラクタをダンプします。</p>
+<p><br /></p>
+<p><strong>Foo.help</strong> で、<br />Fooクラスのコンストラクタをダンプします</p>
 <pre>
 > Foo.help
 
@@ -133,16 +134,20 @@
   }
 </pre>
 
-<p>引数・型・戻り値などの情報を<br /><strong>クイックに確認</strong>できます。</p>
+<p>引数・型・戻り値などの情報を<br /><strong>クイックに確認</strong>できます</p>
 </section>
-<section id="リンクを表示します" class="level2">
-<h2>リンクを表示します</h2>
-<p>Foo.js のリファレンスページと、<br />Google 検索用のURLを提示します。</p>
+<section id="リンクを提示します" class="level2">
+<h2>リンクを提示します</h2>
+<p><br /></p>
+<p>Foo.js の<strong>リファレンスページ</strong>と<br /><strong>リポジトリの URL</strong> を提示します。</p>
+<p>Web 全体から検索するための<br /><strong>Google 検索用の URL</strong> も提示します</p>
 <pre>
 > Foo.help
 
-  GitHub wiki page:
+  Reference:
       <a href="https://github.com/uupaa/Foo.js/wiki/Foo#wiki-foo">https://github.com/uupaa/Foo.js/wiki/Foo#wiki-foo</a>
+  Repository:
+      <a href="https://github.com/uupaa/Foo.js/">https://github.com/uupaa/Foo.js/</a>
   Google.search( Foo ):
       <a href="http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Foo">http://www.google.com/search?lr=lang_ja&ie=UTF-8&oe=UTF-8&q=Foo</a>
 </pre>
@@ -151,7 +156,8 @@
 </section>
 <section id="ネイティブ-api-を調べられます" class="level2">
 <h2>ネイティブ API を調べられます</h2>
-<p><strong>Array.prototype.every.help</strong>で<br /><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every">Array#every</a> を解説した MDN のページと<br />Google で検索するためのURLを提示します。</p>
+<p><br /></p>
+<p><strong>Array.prototype.every.help</strong> とすると<br /><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/every">Array#every</a> を解説した <strong>MDN のリンク</strong>と<br /><strong>Google 検索用の URL</strong> を提示します</p>
 <pre>
 > Array.prototype.every.help
 
@@ -167,8 +173,8 @@
 </section>
 <section id="コンテキスト依存の検索ができます" class="level2">
 <h2>コンテキスト依存の検索ができます</h2>
-<p><strong>Help(&quot;キーワード&quot;)</strong> で<br />global や window オブジェクト以下から<br />一致するプロパティや関数を検索します。</p>
-<p><br /> キーワードが見つからない場合は<br />Google の検索リンクを表示します。</p>
+<p><strong>Help(&quot;キーワード&quot;)</strong> で<br />global や window オブジェクト以下から<br />キーワードと一致する関数や<br />プロパティを検索し<br />リンクを提示します。</p>
+<p>キーワードが見つからない場合は<br /><strong>Google 検索用の URL</strong> を提示します</p>
 <pre>
 > Help("Array.isHoge")
 
@@ -187,21 +193,21 @@ Google.search( Array.isHoge ):
 <hr />
 <section id="section-2" class="level2">
 <h2></h2>
-<p><a href="https://github.com/uupaa/Help.js">Help.js</a> のドキュメントをご覧ください。</p>
+<p><a href="https://github.com/uupaa/Help.js">Help.js</a> のドキュメントをご覧ください</p>
 <hr />
-<p>Help.js は、WebModule の一部です。<br />こちらのドキュメントも<br />合わせて参照してください。</p>
+<p>Help.js は <a href="https://github.com/uupaa/WebModule/wiki/WebModule">WebModule</a> で書かれています</p>
+<p><br /> こちらのドキュメントも<br />合わせて参照してください</p>
 <ul>
 <li><a href="https://github.com/uupaa/WebModule/wiki/WebModule">WebModule</a></li>
 <li><a href="https://github.com/uupaa/WebModule/wiki/WebModuleWorkflow">WebModuleワークフロー</a></li>
 <li><a href="https://github.com/uupaa/WebModule/wiki/WebModuleCodePattern">WebModuleコードパターン</a></li>
 </ul>
-<hr />
 </section>
 <section id="section-3" class="level2">
 <h2></h2>
-<p>このスライドにも<br />Help.js が組み込まれています。</p>
+<p>このスライドにも<br />Help.js が組み込まれています</p>
 <hr />
-<p><small> Command + Option + I や、<br />コンテキストメニューの 要素の検証 から DevTools を開き、<br />以下のコマンドを試してみてください。 </small></p>
+<p><small> Command + Option + I や、<br />コンテキストメニューの 要素の検証 から DevTools を開き、<br />以下のコマンドを試してみてください </small></p>
 <pre class="sh"><code>&gt; Array.prototype.reduce.help
 
 &gt; Object.freeze.help

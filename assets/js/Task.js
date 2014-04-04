@@ -1,5 +1,6 @@
 // @name: Task.js
 // @require: Valid.js
+// @cutoff: @assert @node @xbrowser
 
 (function(global) {
 "use strict";
@@ -63,16 +64,18 @@ function Task(taskCount, // @arg Integer: task count, value from 1.
     }
 }
 
-Task["repository"] = "https://github.com/uupaa/Task.js/";
+//{@xbrowser
 Task["name"] = "Task";
+//}@xbrowser
 
+Task["repository"] = "https://github.com/uupaa/Task.js/";
 Task["prototype"] = {
     "constructor":  Task,
     // --- buffer accessor ---
     "push":         Task_push,      // Task#push(value:Any):this
     "set":          Task_set,       // Task#set(key:String, value:Any):this
     // --- flow state ---
-    "done":         Task_done,      // Task#done(err:Error/Null):this
+    "done":         Task_done,      // Task#done(err:Error/null):this
     "pass":         Task_pass,      // Task#pass():this
     "miss":         Task_miss,      // Task#miss():this
     "exit":         Task_exit,      // Task#exit():this
@@ -93,7 +96,10 @@ Task["run"]       = Task_run;       // Task.run(taskRoute:String,
                                     //          taskMap:TaskMapObject/TaskMapArray,
                                     //          callback:Function/Junction,
                                     //          options:Object = {}):Task
-
+Task["loop"]      = Task_loop;      // Task.loop(source:Object/Array,
+                                    //           tick:Function,
+                                    //           callback:Function/Junction,
+                                    //           options:Object = {}):Task
 // --- implement -------------------------------------------
 function Task_push(value) { // @arg Any:
                             // @ret this:
@@ -303,7 +309,8 @@ function Task_objectize(source) { // @arg Array:
 
 function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
                   taskMap,   // @arg TaskMapObject/TaskMapArray: { a:fn, b:fn, c:fn, d:fn }, [fn, ...]
-                  callback,  // @arg Function/Junction: callback(err:Error, buffer:Array)
+                             //             fn(task:Task, arg:Any, groupIndex:Integer):void
+                  callback,  // @arg Function/Junction: finished callback. callback(err:Error, buffer:Array)
                   options) { // @arg Object(= {}): { arg, name, buffer }
                              //       options.arg    - Any(= null): task argument.
                              //       options.name   - String(= "Task.run"): junction task name.
@@ -352,7 +359,7 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
 //}@assert
 
     var junction = new Task(line.length, callback, { "name": name, "buffer": buffer });
-    var param = { junction: junction, line: line, index: 0, taskMap: taskMap, arg: arg };
+    var param = { junction: junction, line: line, groupIndex: 0, taskMap: taskMap, arg: arg };
 
     _nextGroup(param);
     return junction;
@@ -361,7 +368,7 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
 function _nextGroup(param) {
     if (!param.junction["isFinished"]()) {
         // --- create task group ---
-        var group = param.line[param.index++]; // group: ["a"] or ["b", "c"] or ["d"]
+        var group = param.line[param.groupIndex++]; // group: ["a"] or ["b", "c"] or ["d"]
 
         if (group.length === 1) {
             // --- single task ---
@@ -386,7 +393,7 @@ function _nextGroup(param) {
 
         if (taskName in param.taskMap) {
             try {
-                param.taskMap[taskName](task, param.arg); // call userTask(task, arg) { ... }
+                param.taskMap[taskName](task, param.arg, param.groupIndex - 1); // call userTask(task, arg, groupIndex) { ... }
                 if (singleTask) {
                     _nextGroup(param); // recursive call
                 }
@@ -423,6 +430,34 @@ function _validateTaskMap(groupArray, // @arg TaskGroupArray:
     });
 }
 //}@assert
+
+function Task_loop(source,    // @arg Object/Array: for loop and for-in loop data. [1, 2, 3], { a: 1, b: 2, c: 3 }
+                   tick,      // @arg Function: tick callback function. tick(task:Task, key:String, source:Object/Array):void
+                   callback,  // @arg Function/Junction: finished callback(err:Error, buffer:Array)
+                   options) { // @arg Object(= {}): { arg, name, buffer }
+                              //       options.arg    - Any(= null): task argument.
+                              //       options.name   - String(= "Task.loop"): junction task name.
+                              //       options.buffer - Array(= []): shared buffer.
+                              // @ret Task: Junction
+                              // @help: Task.loop
+//{@assert
+    _if(!Valid.type(source, "Object/Array"), "Task.loop(source)");
+    _if(!Valid.type(tick,   "Function"),     "Task.loop(,tick)");
+//}@assert
+
+    var keys = Object.keys(source);
+    var taskRoute = new Array(keys.length + 1).join("_").split("").join(">"); // "_>_>_ ..."
+    var taskMap = {
+            "_": function(task, arg, groupIndex) {
+                tick(task, keys[groupIndex], source);
+            }
+        };
+
+    options = options || {};
+    options["name"] = options["name"] || "Task.loop";
+
+    return Task_run(taskRoute, taskMap, callback, options);
+}
 
 //{@assert
 function _if(value, msg) {

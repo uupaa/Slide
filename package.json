@@ -15,7 +15,11 @@
     "show":             "npm run show-webmodule",
     "show-webmodule":   "open ./slide/WebModule/index.html",
     "show-help":        "open ./slide/Help.js/index.html",
-    "show-task":        "open ./slide/Task.js/index.html"
+    "show-task":        "open ./slide/Task.js/index.html",
+    "copy":             "npm run copy-help; npm run copy-task; npm run copy-valid",
+    "copy-help":        "cp node_modules/uupaa.help.js/lib/Help.js assets/js/Help.js",
+    "copy-task":        "cp node_modules/uupaa.task.js/lib/Task.js assets/js/Task.js",
+    "copy-valid":       "cp node_modules/uupaa.valid.js/lib/Valid.js assets/js/Valid.js"
   },
   "dependencies": {
   },

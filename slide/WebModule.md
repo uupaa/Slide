@@ -116,6 +116,9 @@ WebModule は、[Help.js][] による
 
 ```sh
 $ git clone git@github.com:uupaa/WebModule.git
+$ cd WebModule
+$ npm install
+$ cd ..
 ```
 
 <small>MyWebModule を作成します</small>
@@ -136,8 +139,6 @@ $ npm run watch             <- lib/MyModule.js を監視して自動ビルド
 $ npm run build             <- release/MyModule.min.js をビルド
 $ npm run test              <- lib/MyModule.js と release/MyModule.min.js をテスト
 $ npm run lint              <- lib/MyModule.js を評価
-
-$ npm run build-release     <- モジュールの依存関係を解決した状態でリリースビルド
 ```
 
 ## Browser, WebWorkers, Node.js で使う

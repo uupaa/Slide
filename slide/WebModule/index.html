@@ -134,7 +134,10 @@
 <section id="section-2" class="level2">
 <h2></h2>
 <p><small>WebModule をインストールします</small></p>
-<pre class="sh"><code>$ git clone git@github.com:uupaa/WebModule.git</code></pre>
+<pre class="sh"><code>$ git clone git@github.com:uupaa/WebModule.git
+$ cd WebModule
+$ npm install
+$ cd ..</code></pre>
 <p><small>MyWebModule を作成します</small></p>
 <pre class="sh"><code>$ git clone git@github.com:GITHUB-USER-NAME/MyWebModule.git
 $ cd MyWebModule
@@ -146,9 +149,7 @@ $ npm install</code></pre>
 $ npm run watch             &lt;- lib/MyModule.js を監視して自動ビルド
 $ npm run build             &lt;- release/MyModule.min.js をビルド
 $ npm run test              &lt;- lib/MyModule.js と release/MyModule.min.js をテスト
-$ npm run lint              &lt;- lib/MyModule.js を評価
-
-$ npm run build-release     &lt;- モジュールの依存関係を解決した状態でリリースビルド</code></pre>
+$ npm run lint              &lt;- lib/MyModule.js を評価</code></pre>
 </section>
 <section id="browser-webworkers-node.js-で使う" class="level2">
 <h2>Browser, WebWorkers, Node.js で使う</h2>

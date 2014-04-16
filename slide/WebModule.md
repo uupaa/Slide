@@ -35,7 +35,7 @@
 WebModule のレールに乗ることで、  
 
 - 著名なツールの使い方を学ぶ
-- JavaScriptを使った開発に必要なスキルを学ぶ
+- 開発に必要なスキルを学ぶ
 - 品質保証に関する基本的な考え方を学ぶ
 
 ことができます。
@@ -72,7 +72,7 @@ Chrome + [npm][] + [github.com][] + [Markdown][] + [ClosureCompiler][] + [JSHint
 
 ##
 
-- ドキュメントはドキュメントで書きます
+- ソースコードはドキュメントと書き分けます
 - ドキュメントとソースコードのつなぎ込みは、  
   [Help.js][] を使います
 - 旧来の [JsDoc][] によるマークアップは<br />**非推奨**です(併用は可能です)
@@ -228,30 +228,12 @@ require("DependencyWebModule.js");
 require("../lib/MyWebModule.js");
 ```
 
-
-
-
-
 <!-- ----------------------------------------------------- -->
 
-# さらに詳しく知りたい方は…
-
-----
-
-##
-
-こちらのドキュメントをご覧ください。
-
-- [WebModule][]
-- [WebModuleワークフロー][]
-- [WebModuleコードパターン][]
-- [Help.js][]
-
-##
+# WebModule の探し方
 
 npm search コマンドで、  
-WebModule をベースとした  
-モジュールを検索できます。
+WebModule を検索できます
 
 ```sh
 $ npm search webmodule
@@ -270,6 +252,17 @@ webmodule              The WebModule is module templ...     =uupaa   2014-03-31 
 
 その他の実装例は、  
 こちらの[リポジトリ](https://github.com/uupaa?tab=repositories)をご覧ください。
+
+# さらに詳しく知りたい方は…
+
+##
+
+こちらのドキュメントをご覧ください。
+
+- [WebModule][]
+- [WebModuleワークフロー][]
+- [WebModuleコードパターン][]
+- [Help.js][]
 
 
 [npm]: https://www.npmjs.org/

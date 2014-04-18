@@ -20,7 +20,7 @@
 テストがあり  
 どこでも動作し  
 品質が数値化され  
-良質のドキュメントがある  
+コードとドキュメントが分離している  
 そんな部品群を量産するための  
 開発フローと関連ツールを提供します。
 
@@ -68,8 +68,8 @@ Chrome + [npm][] + [github.com][] + [Markdown][] + [ClosureCompiler][] + [JSHint
   モジュールを **npm** で公開します  
 - ドキュメントは **Markdown** で書き  
   **github.com/wiki** に置きます
-- ソースコードの履歴とドキュメントの履歴を分けます
-    - つまり、ソースコードとドキュメントを書き分けます(疎結合)
+- ソースコードの履歴とドキュメントの履歴を分けます  
+  (コードとドキュメントを別々に書きます)
     - ソースコードとドキュメントのつなぎ込みは [Help.js][] で行います
     - ソースコードの履歴は **git / github.com** の機能を使います
     - ドキュメントの履歴は **github.com/wiki** の機能を使います
@@ -82,7 +82,7 @@ Chrome + [npm][] + [github.com][] + [Markdown][] + [ClosureCompiler][] + [JSHint
 
 # カバレッジと動作保証
 
-## カバレッジ(静的品質検査)ツールを<br />[Plato][] を利用できます
+## [Plato][](カバレッジツール)を利用できます
 
 <br />
 ソースコードの静的解析を行い、  
@@ -95,7 +95,7 @@ Chrome + [npm][] + [github.com][] + [Markdown][] + [ClosureCompiler][] + [JSHint
 
 ## [Test.js][] と [Travis-CI] による動作保証
 
-**7つの環境で一斉にテスト**します。
+**7つの環境でテスト**します。
 
 1. Node.js + SourceCode
 2. Node.js + MinifiedCode
@@ -118,7 +118,7 @@ Chrome + [npm][] + [github.com][] + [Markdown][] + [ClosureCompiler][] + [JSHint
 ----
 ## 
 
-## STEP 1
+## Step 1.
 
 WebModule をローカルにクローンします
 
@@ -134,7 +134,7 @@ $ npm install
 
 ```
 
-## STEP 2
+## Step 2.
 
 github.com で MyWebModule を作成し、<br />
 ローカルにクローンします
@@ -153,7 +153,7 @@ $ npm install           // MyWebModule の動作に必要な外部モジュー�
 
 ```
 
-## STEP 3
+## Step 3.
 
 `npm run ...` コマンドで開発を進めます
 
@@ -175,7 +175,7 @@ $ npm run lint              // lib/MyModule.js を評価します
 
 ```
 
-# それぞれの環境で MyWebModule を動かす
+# それぞれの環境で<br /> MyWebModule を動かす
 
 ## for Browser
 

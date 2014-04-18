@@ -1,9 +1,11 @@
 {
   "name":           "Slide",
-  "version":        "0.0.0",
+  "version":        "0.0.1",
   "description":    "",
   "main":           "",
   "scripts": {
+    "webmodule":        "npm run build-webmodule; npm run show-webmodule; npm run watch-webmodule",
+
     "watch":            "npm run watch-webmodule",
     "watch-webmodule":  "node node_modules/uupaa.watch.js --verbose --action build-webmodule --delay 1 ./slide/WebModule.md",
     "watch-help":       "node node_modules/uupaa.watch.js --verbose --action build-help --delay 1 ./slide/Help.js.md",
@@ -18,8 +20,7 @@
     "show-task":        "open ./slide/Task.js/index.html",
     "copy":             "npm run copy-help; npm run copy-task; npm run copy-valid",
     "copy-help":        "cp node_modules/uupaa.help.js/lib/Help.js assets/js/Help.js",
-    "copy-task":        "cp node_modules/uupaa.task.js/lib/Task.js assets/js/Task.js",
-    "copy-valid":       "cp node_modules/uupaa.valid.js/lib/Valid.js assets/js/Valid.js"
+    "copy-task":        "cp node_modules/uupaa.task.js/lib/Task.js assets/js/Task.js"
   },
   "dependencies": {
   },

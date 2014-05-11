@@ -43,9 +43,11 @@ Polyfillライブラリの存在に左右されるような
 不安定な状況から開放されます
 <br />
 
-- 環境依存なコードがある? ▶ ありません
 - 複雑なトリックに依存してる? ▶ していません
-- Browser, WebWorkers, Node.js で動く? ▶ 動きます
+- 動作環境に依存したコードがある? ▶ ありません
+- どこでも(Browser, Worker, Node)動く? ▶ 動きます
+- Closure Compiler の ADVANCED MODE で  
+  最適化コンパイルできる? ▶ できます
 
 
 ## 

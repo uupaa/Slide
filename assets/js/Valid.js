@@ -1,6 +1,6 @@
 // @name: Valid.js
 // @require: none
-// @cutoff: @assert @xbrowser @node
+// @cutoff: @assert @node
 
 (function Valid_js(global) {
 "use strict";
@@ -9,16 +9,18 @@
 var _inNode = "process" in global;
 
 // --- define ----------------------------------------------
-function returnTrue() { return true; }
-function returnEmptyString() { return ""; }
+//{@assert
+var TYPED_ARRAYS = [
+        "Int8Array", "Uint8Array", "Uint8ClampedArray",
+        "Int16Array", "Uint16Array",
+        "Int32Array", "Uint32Array",
+        "Float32Array", "Float64Array"
+    ];
+//}@assert
 
 // --- interface -------------------------------------------
 function Valid() { // @help: Valid
 }
-
-//{@xbrowser
-Valid["name"] = "Valid";
-//}@xbrowser
 
 Valid["repository"] = "https://github.com/uupaa/Valid.js";
 
@@ -35,6 +37,14 @@ Valid["stack"]      = Valid_stack; // Valid.stack(message:String = "", depth:Int
 //}@assert
 
 // --- implement -------------------------------------------
+function returnTrue() {
+    return true;
+}
+
+function returnEmptyString() {
+    return "";
+}
+
 //{@assert
 function Valid_type(value,      // @arg Any:
                     types,      // @arg TypeString: eg: "Type1", "Type1/Type2/omit", "JSON"
@@ -44,27 +54,52 @@ function Valid_type(value,      // @arg Any:
     return types.split(/[\|\/]/).some(_judge);
 
     function _judge(type) {
-        switch (type.toLowerCase()) {
-        case "omit":    return value === undefined || value === null;
-        case "null":    return value === null;
-        case "undefined":return value === undefined;
-        case "array":   return Array.isArray(value);
-        case "integer": return typeof value === "number" && Math.ceil(value) === value;
-        case "json":    return Valid_json(value, validate);
+        var lowerName = type.toLowerCase();
+
+        switch (lowerName) {
+        case "omit":        return value === null || value === undefined;
+        case "null":        return value === null;
+        case "undefined":   return value === undefined;
+        case "array":       return Array.isArray(value);
+        case "integer":     return typeof value === "number" && Math.ceil(value) === value;
+        case "json":        return Valid_json(value, validate);
+        case "typedarray":  return Valid_isTypedArray(value);
         case "object":  // typeof null -> object
             return (value || 0).constructor !== ({}).constructor ? false
                  : typeof validate === "string" ? Valid_keys(value, validate)
                                                 : true;
         }
-        if (value !== undefined && value !== null) {
-            if (Object.prototype.toString.call(value) === "[object " + type + "]") {
-                return true;
-            } else if (value.constructor.name === type) {
-                return true;
-            }
+        if (value === null || value === undefined) {
+            return false;
+        }
+        if ( _getConstructorName(value).toLowerCase() === lowerName ||
+             _getBaseClassName(value).toLowerCase()   === lowerName ) {
+            return true;
         }
         return false;
     }
+}
+
+function _getBaseClassName(value) { // @arg Any: instance, exclude null and undefined.
+                                    // @ret String:
+    // Object.prototype.toString.call(new Error());     -> "[object Error]"
+    // Object.prototype.toString.call(new TypeError()); -> "[object Error]"
+    return Object.prototype.toString.call(value).split(" ")[1].slice(0, -1); // -> "Error"
+}
+
+function _getConstructorName(value) { // @arg Any: instance, exclude null and undefined.
+                                      // @ret String:
+    // _getConstructorName(new (function Aaa() {})); -> "Aaa"
+    return value.constructor["name"] ||
+           (value.constructor + "").split(" ")[1].split("\x28")[0]; // for IE
+}
+//}@assert
+
+//{@assert
+function Valid_isTypedArray(value) { // @arg Any:
+    return TYPED_ARRAYS.some(function(typeName) {
+                return _getBaseClassName(value).toLowerCase() === typeName.toLowerCase();
+            });
 }
 //}@assert
 
@@ -73,7 +108,7 @@ function Valid_keys(value,  // @arg Object: { key1, key2 }
                     keys) { // @arg String: valid choices. "key1,key2,key3"
                             // @ret Boolean: false is invalid value.
                             // @help: Valid.keys
-    var items = keys.split(",");
+    var items = keys.replace(/ /g, "").split(",");
 
     return Object.keys(value).every(function(key) {
         return items.indexOf(key) >= 0;
@@ -142,9 +177,9 @@ if (_inNode) {
 }
 //}@node
 if (global["Valid"]) {
-    global["Valid_"] = Valid; // already exsists
+    global["Valid_"] = Valid; // secondary
 } else {
-    global["Valid"]  = Valid;
+    global["Valid"]  = Valid; // primary
 }
 
 })((this || 0).self || global);

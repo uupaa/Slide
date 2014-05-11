@@ -5,6 +5,7 @@
   "main":           "",
   "scripts": {
     "webmodule":        "npm run build-webmodule; npm run show-webmodule; npm run watch-webmodule",
+    "task":             "npm run build-task; npm run show-task; npm run watch-task",
 
     "watch":            "npm run watch-webmodule",
     "watch-webmodule":  "node node_modules/uupaa.watch.js --verbose --action build-webmodule --delay 1 ./slide/WebModule.md",

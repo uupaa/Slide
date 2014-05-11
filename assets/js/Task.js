@@ -12,7 +12,7 @@ var Valid = global["Valid"] || require("uupaa.valid.js");
 
 var _inNode = "process" in global;
 var _taskInstances = {}; // instances. { "taskName@counter": TaskInstance, ... }
-var _taskCounter   = 0;
+var _taskCount = 0;
 
 // --- define ----------------------------------------------
 function NOP() {}
@@ -28,9 +28,9 @@ function Task(taskCount, // @arg Integer: user task count, value from 1.
                          // @help: Task
 
 //{@assert
-    _if(!Valid.type(taskCount, "Integer") || taskCount < 0,      "Task(taskCount)");
-    _if(!Valid.type(callback, "Function/Task/omit"),             "Task(,callback)");
-    _if(!Valid.type(options, "Object/omit", "tick,name,buffer"), "Task(,,options)");
+    _if(!Valid.type(taskCount, "Integer") || taskCount < 0,      Task, "taskCount");
+    _if(!Valid.type(callback, "Function/Task/omit"),             Task, "callback");
+    _if(!Valid.type(options, "Object/omit", "tick,name,buffer"), Task, "options");
 //}@assert
 
     options  = options  || {};
@@ -42,12 +42,12 @@ function Task(taskCount, // @arg Integer: user task count, value from 1.
     var buffer   = options["buffer"] || (junction ? callback["buffer"]() : []); // Junction -> Buffer share
 
 //{@assert
-    _if(!Valid.type(tick, "Function/omit"), "Task(,,options.tick)");
-    _if(!Valid.type(name, "String"),        "Task(,,options.name)");
-    _if(!Valid.type(buffer, "Array"),       "Task(,,options.buffer)");
+    _if(!Valid.type(tick, "Function/omit"), Task, "options.tick");
+    _if(!Valid.type(name, "String"),        Task, "options.name");
+    _if(!Valid.type(buffer, "Array"),       Task, "options.buffer");
 //}@assert
 
-    this["name"] = name + "@" + (++_taskCounter); // String: "task@1"
+    this["name"] = name + "@" + (++_taskCount); // String: "task@1"
     this._ = {
         tick:           tick,       // Function:
         buffer:         buffer,     // Array:
@@ -78,6 +78,7 @@ Task["prototype"] = {
     "miss":         Task_miss,      // Task#miss():this
     "exit":         Task_exit,      // Task#exit():this
     // --- utility ---
+    "state":        Task_state,     // Task#state():String
     "buffer":       Task_buffer,    // Task#buffer():Array/null
     "extend":       Task_extend,    // Task#extend(count:Integer):this
     "message":      Task_message,   // Task#message(message:Error/String):this
@@ -198,6 +199,12 @@ function _createError(that) { // @ret Error/null:
     return new Error(that._.message || ("Error: " + that["name"]));
 }
 
+function Task_state() { // @ret String: task state "" / "pass" / "miss" / "exit"
+                        // @help: Task#state
+                        // @desc: get state
+    return this._.state;
+}
+
 function Task_buffer() { // @ret Array/null: task finished is null.
                          // @help: Task#Buffer
     return this._.buffer;
@@ -208,7 +215,7 @@ function Task_extend(count) { // @arg Integer: task count
                               // @help: Task#extend
                               // @desc: extend task count.
 //{@assert
-    _if(!Valid.type(count, "Integer") || count < 0, "Task#extend(count)");
+    _if(!Valid.type(count, "Integer") || count < 0, Task.prototype.extend, "count");
 //}@assert
 
     this._.taskCount += count;
@@ -220,7 +227,7 @@ function Task_message(message) { // @arg Error/String: message.
                                  // @desc: set message
                                  // @help: Task#message
 //{@assert
-    _if(!Valid.type(message, "Error/String"), "Task#message(message)");
+    _if(!Valid.type(message, "Error/String"), Task.prototype.message, "message");
 //}@assert
 
     this._.message = message["message"] || message;
@@ -232,7 +239,7 @@ function Task_missable(count) { // @arg Integer: missable count
                                 // @help: Task#missable
                                 // @desc: extend missable count.
 //{@assert
-    _if(!Valid.type(count, "Integer") || count < 0, "Task#missable(count)");
+    _if(!Valid.type(count, "Integer") || count < 0, Task.prototype.missable, "count");
 //}@assert
 
     this._.missableCount += count;
@@ -249,7 +256,7 @@ function Task_dump(filter) { // @arg String(= ""): task name filter.
                              // @help: Task.dump
                              // @desc: dump snapshot.
 //{@assert
-    _if(!Valid.type(filter, "String/omit"), "Task.dump(filter)");
+    _if(!Valid.type(filter, "String/omit"), Task.dump, "filter");
 //}@assert
 
     var rv = {};
@@ -274,14 +281,14 @@ function Task_dump(filter) { // @arg String(= ""): task name filter.
 function Task_drop() { // @help: Task.drop
                        // @desc: drop snapshot.
     _taskInstances = {}; // [!] GC
-    _taskCounter   = 0;  // [!] reset counter
+    _taskCount = 0;      // [!] reset count
 }
 
 function Task_flatten(source) { // @arg Array:
                                 // @ret Array:
                                 // @help: Task.flatten
 //{@assert
-    _if(!Valid.type(source, "Array"), "Task.flatten(source)");
+    _if(!Valid.type(source, "Array"), Task.flatten, "source");
 //}@assert
 
     return Array.prototype.concat.apply([], source);
@@ -291,7 +298,7 @@ function Task_arraynize(source) { // @arg Array:
                                   // @ret Array:
                                   // @help: Task.arraynize
 //{@assert
-    _if(!Valid.type(source, "Array"), "Task.arraynize(source)");
+    _if(!Valid.type(source, "Array"), Task.arraynize, "source");
 //}@assert
 
     return Array.prototype.slice.call(source);
@@ -301,7 +308,7 @@ function Task_objectize(source) { // @arg Array:
                                   // @ret Object:
                                   // @help: Task.objectize
 //{@assert
-    _if(!Valid.type(source, "Array"), "Task.objectize(source)");
+    _if(!Valid.type(source, "Array"), Task.objectize, "source");
 //}@assert
 
     return Object.keys(source).reduce(function(result, key) {
@@ -321,10 +328,10 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
                              // @ret Task: Junction
                              // @help: Task.run
 //{@assert
-    _if(!Valid.type(taskRoute, "String"),            "Task.run(taskRoute)");
-    _if(!Valid.type(taskMap,   "Object/Array"),      "Task.run(,taskMap)");
-    _if(!Valid.type(callback,  "Function/Task/omit"),"Task.run(,,callback)");
-    _if(!Valid.type(options,   "Object/omit", "arg,name,buffer"), "Task.run(,,,options)");
+    _if(!Valid.type(taskRoute, "String"),            Task.run, "taskRoute");
+    _if(!Valid.type(taskMap,   "Object/Array"),      Task.run, "taskMap");
+    _if(!Valid.type(callback,  "Function/Task/omit"),Task.run, "callback");
+    _if(!Valid.type(options,   "Object/omit", "arg,name,buffer"), Task.run, "options");
 //}@assert
 
     options  = options  || {};
@@ -335,8 +342,8 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
     var buffer = options["buffer"] || (callback instanceof Task ? callback["buffer"]() : []); // Junction -> Buffer share
 
 //{@assert
-    _if(!Valid.type(name, "String"),  "Task.run(,,,options.name)");
-    _if(!Valid.type(buffer, "Array"), "Task.run(,,,options.buffer)");
+    _if(!Valid.type(name, "String"),  Task.run, "options.name");
+    _if(!Valid.type(buffer, "Array"), Task.run, "options.buffer");
 //}@assert
 
     var line = null;
@@ -423,7 +430,7 @@ function _validateTaskMap(groupArray, // @arg TaskGroupArray:
 }
 //}@assert
 
-function Task_loop(source,    // @arg Object/Array: for loop and for-in loop data. [1, 2, 3], { a: 1, b: 2, c: 3 }
+function Task_loop(source,    // @arg Object/Array: loop source. [1, 2, 3], { a: 1, b: 2, c: 3 }
                    tick,      // @arg Function: tick callback function. tick(task:Task, key:String, source:Object/Array):void
                    callback,  // @arg Function/Junction(= null): finished callback(err:Error, buffer:Array)
                    options) { // @arg Object(= {}): { arg, name, buffer }
@@ -433,8 +440,8 @@ function Task_loop(source,    // @arg Object/Array: for loop and for-in loop dat
                               // @ret Task: Junction
                               // @help: Task.loop
 //{@assert
-    _if(!Valid.type(source, "Object/Array"), "Task.loop(source)");
-    _if(!Valid.type(tick,   "Function"),     "Task.loop(,tick)");
+    _if(!Valid.type(source, "Object/Array"), Task.loop, "source");
+    _if(!Valid.type(tick,   "Function"),     Task.loop, "tick");
 //}@assert
 
     var keys = Object.keys(source);
@@ -452,9 +459,14 @@ function Task_loop(source,    // @arg Object/Array: for loop and for-in loop dat
 }
 
 //{@assert
-function _if(value, msg) {
+function _if(value, fn, hint) {
     if (value) {
+        var msg = fn.name + " " + hint;
+
         console.error(Valid.stack(msg));
+        if (global["Help"]) {
+            global["Help"](fn, hint);
+        }
         throw new Error(msg);
     }
 }
@@ -467,9 +479,9 @@ if (_inNode) {
 }
 //}@node
 if (global["Task"]) {
-    global["Task_"] = Task; // already exsists
+    global["Task_"] = Task; // secondary
 } else {
-    global["Task"]  = Task;
+    global["Task"]  = Task; // primary
 }
 
 })((this || 0).self || global);

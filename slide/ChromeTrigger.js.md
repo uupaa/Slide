@@ -34,7 +34,11 @@ WebGame はどうですか?
 
 ## 描画崩れ?<br />API未実装?<br />更新されないブラウザ?
 
-## Android Browser?
+## 作業量?<br />バッドノウハウ回避?<br />考えなきゃいけない事が多すぎる?
+
+## モバイルデバイスや<br />モバイルブラウザが多すぎる?
+
+## つまり Android Browser?
 
 ## Android Browser がボトルネック?
 
@@ -45,7 +49,7 @@ WebGame はどうですか?
 
 ## 新世界の神?
 
-## それはちょっと無理そうなので…
+## それはちょっと無理…
 
 ## Android Browser で<br />開いてしまったページを<br />自動的に **Chrome** で開き直す<br /> **トリガー**を提供する?
 
@@ -55,10 +59,14 @@ WebGame はどうですか?
 
 ![](../../assets/img/ChromeTrigger_Flow.png)
 
-# より詳しくは…
+# ChromeTrigger.js を使うと
 
-[ChromeTrigger.js][] のドキュメントを  
-参照してください
+Android Browser で開いているページを  
+Chrome Browser で開き直すことができます!
+
+<hr />
+より詳しくは、[ChromeTrigger.js][] の  
+ドキュメントを参照してください。
 
 
 

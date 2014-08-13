@@ -5,7 +5,8 @@
   "main":           "",
   "scripts": {
     "webmodule":        "npm run build-webmodule; npm run show-webmodule; npm run watch-webmodule",
-    "task":             "npm run build-task; npm run show-task; npm run watch-task",
+    "task":             "npm update; npm run copy-task-module; npm run build-task; npm run show-task; npm run watch-task",
+    "copy-task-module": "cp node_modules/uupaa.task.js/lib/Task.js slide/Task.js/assets/js/Task.js",
 
     "watch":            "npm run watch-chrome",
     "watch-chrome":     "node node_modules/uupaa.watch.js --verbose --action build-chrome --delay 1 ./slide/ChromeTrigger.js.md",

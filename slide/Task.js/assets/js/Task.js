@@ -1,118 +1,129 @@
-// @name: Task.js
-
 (function(global) {
+"use strict";
 
-// --- variable --------------------------------------------
-var _inNode = "process" in global;
+// --- dependency modules ----------------------------------
+// --- define / local variables ----------------------------
+//var _runOnNode = "process" in global;
+//var _runOnWorker = "WorkerLocation" in global;
+//var _runOnBrowser = "document" in global;
+
 var _taskInstances = {}; // instances. { "taskName@counter": TaskInstance, ... }
-var _taskCounter   = 0;
+var _taskCount = 0;
 
-// --- define ----------------------------------------------
-// --- interface -------------------------------------------
-function Task(taskCount, // @arg Integer: task count, value from 1.
-              callback,  // @arg Function/Junction: callback(err:Error, buffer:Array)
-              options) { // @arg Object(= {}): { tick, name, buffer }
-                         //        options.tick   - Function(= null): tick(taskName) callback.
-                         //        options.name   - String(= "anonymous"): task name.
-                         //        options.buffer - Array(= []): buffer.
-                         // @desc: Counter based task executor.
-                         // @help: Task
+function NOP() {}
 
-//{@assert
-    _if(!_type(taskCount, "Integer") || taskCount < 0,      "Task(taskCount)");
-    _if(!_type(callback, "Function/Junction"),              "Task(,callback)");
-    _if(!_type(options, "Object/omit", "tick,name,buffer"), "Task(,,options)");
-//}@assert
+// --- class / interfaces ----------------------------------
+function Task(taskCount, // @arg Integer              - user task count, value from 1.
+              callback,  // @arg Function|Task = null - callback(err:Error, buffer:Array)
+              options) { // @arg Object = {}          - { tick, name, buffer }
+                         // @options.tick Function = null      - tick(taskName) callback.
+                         // @options.name String = "anonymous" - task name.
+                         // @options.buffer Array = []         - buffer.
+                         // @desc Counter based task executor.
 
-    options = options || {};
+//{@dev
+    $valid($type(taskCount, "Integer") && taskCount >= 0, Task, "taskCount");
+    $valid($type(callback, "Function|Task|omit"),         Task, "callback");
+    $valid($type(options, "Object|omit"),                 Task, "options");
+    $valid($keys(options, "tick,name,buffer"),            Task, "options");
+//}@dev
+
+    options  = options  || {};
+    callback = callback || NOP;
 
     var junction = callback instanceof Task;
     var tick     = options["tick"]   || null;
     var name     = options["name"]   || "anonymous";
     var buffer   = options["buffer"] || (junction ? callback["buffer"]() : []); // Junction -> Buffer share
 
-//{@assert
-    _if(!_type(tick, "Function/omit"), "Task(,,options.tick)");
-    _if(!_type(name, "String"),        "Task(,,options.name)");
-    _if(!_type(buffer, "Array"),       "Task(,,options.buffer)");
-//}@assert
+//{@dev
+    $valid($type(tick, "Function|omit"), Task, "options.tick");
+    $valid($type(name, "String"),        Task, "options.name");
+    $valid($type(buffer, "Array"),       Task, "options.buffer");
+//}@dev
 
-    this._taskName = name + "@" + (++_taskCounter); // String: "task@1"
+    this["name"] = name + "@" + (++_taskCount); // String: "task@1"
     this._ = {
         tick:           tick,       // Function:
         buffer:         buffer,     // Array:
-        callback:       callback,   // Function/Junction: finished callback.
+        callback:       callback,   // Function|Task: finished callback.
         junction:       junction,   // Boolean: callback is Junction.
-        taskCount:      taskCount,  // Number:
+        taskCount:      taskCount,  // Number:  user task count.
         missableCount:  0,          // Integer: number of missable count.
         passedCount:    0,          // Integer: Task#pass() called count.
         missedCount:    0,          // Integer: Task#miss() called count.
-        message:        "Error: " + this._taskName,
-                                    // String: new Error(message)
+        message:        "",         // String: new Error(message)
         state:          ""          // String: current state. ""(progress), "pass", "miss", "exit"
     };
-    _taskInstances[this._taskName] = this; // register task instance.
+    _taskInstances[this["name"]] = this; // register task instance.
     if (!taskCount) {
-        _update(this, "init");
+        _update(this, "init"); // user task count is zero -> finished.
     }
 }
 
-Task["repository"] = "https://github.com/uupaa/Task.js/";
-Task["name"] = "Task";
+//{@dev
+Task["repository"] = "https://github.com/uupaa/Task.js/"; // GitHub repository URL. http://git.io/Help
+//}@dev
 
 Task["prototype"] = {
-    "constructor":  Task,
+    "constructor":  Task,           // new Task(tackCount:Integer, callback:Function|Task = null, options:Object = {})
     // --- buffer accessor ---
     "push":         Task_push,      // Task#push(value:Any):this
     "set":          Task_set,       // Task#set(key:String, value:Any):this
     // --- flow state ---
-    "done":         Task_done,      // Task#done(err:Error/Null):this
+    "done":         Task_done,      // Task#done(err:Error|null):this
     "pass":         Task_pass,      // Task#pass():this
     "miss":         Task_miss,      // Task#miss():this
     "exit":         Task_exit,      // Task#exit():this
+    // --- closure function ---
+    "passfn":       Task_passfn,    // Task#passfn():TaskPassClosureFunction
+    "missfn":       Task_missfn,    // Task#missfn():TaskMissClosureFunction
     // --- utility ---
-    "buffer":       Task_buffer,    // Task#buffer():Array/null
+    "state":        Task_state,     // Task#state():String
+    "buffer":       Task_buffer,    // Task#buffer():Array|null
     "extend":       Task_extend,    // Task#extend(count:Integer):this
-    "message":      Task_message,   // Task#message(message:Error/String):this
+    "message":      Task_message,   // Task#message(message:Error|String):this
     "missable":     Task_missable,  // Task#missable(count:Integer):this
     "isFinished":   Task_isFinished // Task#isFinished():Boolean
 };
 Task["dump"]      = Task_dump;      // Task.dump(filter:String = ""):Object
-Task["drop"]      = Task_drop;      // Task.drop():void
+Task["clear"]     = Task_clear;     // Task.clear():void
+Task["drop"]      = Task_clear;     // [DEPRECATED] Task.drop():void
 Task["flatten"]   = Task_flatten;   // Task.flatten(source:Array):Array
 Task["arraynize"] = Task_arraynize; // Task.arraynize(source:Array):Array
 Task["objectize"] = Task_objectize; // Task.objectize(source:Array):Object
+
 // --- task runner ---
 Task["run"]       = Task_run;       // Task.run(taskRoute:String,
-                                    //          taskMap:TaskMapObject/TaskMapArray,
-                                    //          callback:Function/Junction,
+                                    //          taskMap:TaskMapObject|TaskMapArray,
+                                    //          callback:Function|Task = null,
                                     //          options:Object = {}):Task
-
-// --- implement -------------------------------------------
-function Task_push(value) { // @arg Any:
-                            // @ret this:
-                            // @help: Task.push
+Task["loop"]      = Task_loop;      // Task.loop(source:Object|Array,
+                                    //           tick:Function,
+                                    //           callback:Function|Task = null,
+                                    //           options:Object = {}):Task
+// --- implements ------------------------------------------
+function Task_push(value) { // @arg Any
+                            // @ret this
     if (this._.buffer) {
         this._.buffer.push(value);
     }
     return this;
 }
 
-function Task_set(key,     // @arg String:
-                  value) { // @arg Any:
-                           // @ret this:
-                           // @help: Task.set
+function Task_set(key,     // @arg String
+                  value) { // @arg Any
+                           // @ret this
     if (this._.buffer) {
         this._.buffer[key] = value;
     }
     return this;
 }
 
-function Task_done(err) { // @arg Error/null:
-                          // @return this:
-                          // @desc:  err is call Task#message(err.message).miss()
-                          //        !err is call Task#pass()
-                          // @help: Task#done
+function Task_done(err) { // @arg Error|null
+                          // @ret this
+                          // @desc err is call Task#message(err.message).miss()
+                          //       !err is call Task#pass()
     var miss = err instanceof Error;
 
     if (miss) {
@@ -122,31 +133,28 @@ function Task_done(err) { // @arg Error/null:
                 : this["pass"]();
 }
 
-function Task_pass() { // @ret this:
-                       // @desc: pass a user task.
-                       // @help: Task#pass
+function Task_pass() { // @ret this
+                       // @desc pass a user task.
     if (this._.tick) {
-        this._.tick(this._taskName); // tick callback(taskName)
+        this._.tick(this["name"]); // tick callback(taskName)
     }
     return _update(this, "pass");
 }
 
-function Task_miss() { // @ret this:
-                       // @desc: miss a user task.
-                       // @help: Task#miss
+function Task_miss() { // @ret this
+                       // @desc miss a user task.
     if (this._.tick) {
-        this._.tick(this._taskName); // tick callback(taskName)
+        this._.tick(this["name"]); // tick callback(taskName)
     }
     return _update(this, "miss");
 }
 
-function Task_exit() { // @ret this:
-                       // @desc: exit the Task.
-                       // @help: Task#eixt
+function Task_exit() { // @ret this
+                       // @desc exit the Task.
     return _update(this, "exit");
 }
 
-function _update(that, method) { // @ret this:
+function _update(that, method) { // @ret this
     var _ = that._;
 
     if (_.state === "") { // task in progress.
@@ -164,78 +172,96 @@ function _update(that, method) { // @ret this:
                 _.callback["message"](_.message); // call Junction#message(...)
                 _.callback[_.state]();            // call Junction#pass() or #miss() or #exit()
             } else {
-                // callback(err:Error/null, buffer:Array)
-                _.callback(_.state === "pass" ? null : new Error(_.message),
-                           that._.buffer);
+                _.callback(_createError(that), _.buffer);
             }
-            delete _taskInstances[that._taskName]; // [!] GC
-            that._.tick = null;                    // [!] GC
-            that._.buffer = null;                  // [!] GC
-            that._.callback = null;                // [!] GC
+            delete _taskInstances[that["name"]]; // [!] GC
+            _.tick = null;                       // [!] GC
+            _.buffer = null;                     // [!] GC
+            _.callback = null;                   // [!] GC
         }
     }
     return that;
 }
 
-function _judgeState(_) { // @ret String: "miss" or "pass" or ""(progress)
+function _judgeState(_) { // @ret String - "miss" or "pass" or ""(progress)
     return _.missedCount >  _.missableCount ? "miss"
          : _.passedCount >= _.taskCount     ? "pass"
                                             : "";
 }
 
-function Task_buffer() { // @ret Array/null: task finished is null.
-                         // @help: Task#Buffer
+function _createError(that) { // @ret Error|null
+    if (that._.state === "pass") {
+        return null;
+    }
+    return new Error(that._.message || ("Error: " + that["name"]));
+}
+
+function Task_passfn() { // @ret TaskPassClosureFunction
+                         // @desc pass a user task.
+    var that = this;
+
+    return function() { that["pass"](); };
+}
+
+function Task_missfn() { // @ret TaskMissClosureFunction
+                         // @desc miss a user task.
+    var that = this;
+
+    return function() { that["miss"](); };
+}
+
+function Task_state() { // @ret String - task state "" / "pass" / "miss" / "exit"
+                        // @desc get state
+    return this._.state;
+}
+
+function Task_buffer() { // @ret Array|null - task finished is null.
     return this._.buffer;
 }
 
-function Task_extend(count) { // @arg Integer: task count
-                              // @ret this:
-                              // @help: Task#extend
-                              // @desc: extend task count.
-//{@assert
-    _if(!_type(count, "Integer") || count < 0, "Task#extend(count)");
-//}@assert
+function Task_extend(count) { // @arg Integer - task count
+                              // @ret this
+                              // @desc extend task count.
+//{@dev
+    $valid($type(count, "Integer") && count >= 0, Task_extend, "count");
+//}@dev
 
     this._.taskCount += count;
     return this;
 }
 
-function Task_message(message) { // @arg Error/String: message.
-                                 // @ret this:
-                                 // @desc: set message
-                                 // @help: Task#message
-//{@assert
-    _if(!_type(message, "Error/String"), "Task#message(message)");
-//}@assert
+function Task_message(message) { // @arg Error|String - message.
+                                 // @ret this
+                                 // @desc set message
+//{@dev
+    $valid($type(message, "Error|String"), Task_message, "message");
+//}@dev
 
     this._.message = message["message"] || message;
     return this;
 }
 
-function Task_missable(count) { // @arg Integer: missable count
-                                // @ret this:
-                                // @help: Task#missable
-                                // @desc: extend missable count.
-//{@assert
-    _if(!_type(count, "Integer") || count < 0, "Task#missable(count)");
-//}@assert
+function Task_missable(count) { // @arg Integer - missable count
+                                // @ret this
+                                // @desc extend missable count.
+//{@dev
+    $valid($type(count, "Integer") && count >= 0, Task_missable, "count");
+//}@dev
 
     this._.missableCount += count;
     return this;
 }
 
-function Task_isFinished() { // @ret Boolean: true is finished
-                             // @help: Task#isFinished
+function Task_isFinished() { // @ret Boolean - true is finished
     return this._.state !== "";
 }
 
-function Task_dump(filter) { // @arg String(= ""): task name filter.
-                             // @ret Object: task info snap shot.
-                             // @help: Task.dump
-                             // @desc: dump snapshot.
-//{@assert
-    _if(!_type(filter, "String/omit"), "Task.dump(filter)");
-//}@assert
+function Task_dump(filter) { // @arg String = "" - task name filter.
+                             // @ret Object      - task info snap shot.
+                             // @desc dump snapshot.
+//{@dev
+    $valid($type(filter, "String|omit"), Task_dump, "filter");
+//}@dev
 
     var rv = {};
 
@@ -256,38 +282,34 @@ function Task_dump(filter) { // @arg String(= ""): task name filter.
     return JSON.parse( JSON.stringify(rv) ); // dead copy
 }
 
-function Task_drop() { // @help: Task.drop
-                       // @desc: drop snapshot.
+function Task_clear() { // @desc clear snapshot.
     _taskInstances = {}; // [!] GC
-    _taskCounter   = 0;  // [!] reset counter
+    _taskCount = 0;      // [!] reset count
 }
 
-function Task_flatten(source) { // @arg Array:
-                                // @ret Array:
-                                // @help: Task#flatten
-//{@assert
-    _if(!_type(source, "Array"), "Task.flatten(source)");
-//}@assert
+function Task_flatten(source) { // @arg Array
+                                // @ret Array
+//{@dev
+    $valid($type(source, "Array"), Task_flatten, "source");
+//}@dev
 
     return Array.prototype.concat.apply([], source);
 }
 
-function Task_arraynize(source) { // @arg Array:
-                                  // @ret Array:
-                                  // @help: Task#arraynize
-//{@assert
-    _if(!_type(source, "Array"), "Task.arraynize(source)");
-//}@assert
+function Task_arraynize(source) { // @arg Array
+                                  // @ret Array
+//{@dev
+    $valid($type(source, "Array"), Task_arraynize, "source");
+//}@dev
 
     return Array.prototype.slice.call(source);
 }
 
-function Task_objectize(source) { // @arg Array:
-                                  // @ret Object:
-                                  // @help: Task#objectize
-//{@assert
-    _if(!_type(source, "Array"), "Task.objectize(source)");
-//}@assert
+function Task_objectize(source) { // @arg Array
+                                  // @ret Object
+//{@dev
+    $valid($type(source, "Array"), Task_objectize, "source");
+//}@dev
 
     return Object.keys(source).reduce(function(result, key) {
         result[key] = source[key];
@@ -295,32 +317,34 @@ function Task_objectize(source) { // @arg Array:
     }, {});
 }
 
-function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
-                  taskMap,   // @arg TaskMapObject/TaskMapArray: { a:fn, b:fn, c:fn, d:fn }, [fn, ...]
-                  callback,  // @arg Function/Junction: callback(err:Error, buffer:Array)
-                  options) { // @arg Object(= {}): { arg, name, buffer }
-                             //       options.arg    - Any(= null): task argument.
-                             //       options.name   - String(= "Task.run"): junction task name.
-                             //       options.buffer - Array(= []): shared buffer.
-                             // @ret Task: Junction
-                             // @help: Task.run
-//{@assert
-    _if(!_type(taskRoute, "String"),            "Task.run(taskRoute)");
-    _if(!_type(taskMap,   "Object/Array"),      "Task.run(,taskMap)");
-    _if(!_type(callback,  "Function/Junction"), "Task.run(,,callback)");
-    _if(!_type(options,   "Object/omit", "arg,name,buffer"), "Task.run(,,,options)");
-//}@assert
+function Task_run(taskRoute, // @arg String - route setting. "a > b + c > d"
+                  taskMap,   // @arg TaskMapObject|TaskMapArray - { a:fn, b:fn, c:fn, d:fn }, [fn, ...]
+                             //             fn(task:Task, arg:Any, groupIndex:Integer):void
+                  callback,  // @arg Function|Task = null - finished callback. callback(err:Error, buffer:Array)
+                  options) { // @arg Object = {}   { arg, name, buffer }
+                             // @options.arg Any = null           - task argument.
+                             // @options.name String = "Task.run" - junction task name.
+                             // @options.buffer Array = []        - shared buffer.
+                             // @ret Task (as Junction)
+//{@dev
+    $valid($type(taskRoute, "String"),            Task_run, "taskRoute");
+    $valid($type(taskMap,   "Object|Array"),      Task_run, "taskMap");
+    $valid($type(callback,  "Function|Task|omit"),Task_run, "callback");
+    $valid($type(options,   "Object|omit"),       Task_run, "options");
+    $valid($keys(options,   "arg|name|buffer"),   Task_run, "options");
+//}@dev
 
-    options = options || {};
+    options  = options  || {};
+    callback = callback || NOP;
 
     var arg    = options["arg"]    || null;
     var name   = options["name"]   || "Task.run";
     var buffer = options["buffer"] || (callback instanceof Task ? callback["buffer"]() : []); // Junction -> Buffer share
 
-//{@assert
-    _if(!_type(name, "String"),  "Task.run(,,,options.name)");
-    _if(!_type(buffer, "Array"), "Task.run(,,,options.buffer)");
-//}@assert
+//{@dev
+    $valid($type(name, "String"),  Task_run, "options.name");
+    $valid($type(buffer, "Array"), Task_run, "options.buffer");
+//}@dev
 
     var line = null;
 
@@ -336,17 +360,17 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
         line = JSON.parse('[["' + Object.keys(taskMap).join('"],["') + '"]]');
     }
 
-//{@assert
+//{@dev
     if (line.length > 1000) {
         throw new TypeError("Too many user tasks. Task.run(taskRoute)");
     }
     if ( !_validateTaskMap(line, taskMap) ) {
         throw new TypeError("Invalid user task. Task.run(taskRoute, taskMap)");
     }
-//}@assert
+//}@dev
 
     var junction = new Task(line.length, callback, { "name": name, "buffer": buffer });
-    var param = { junction: junction, line: line, index: 0, taskMap: taskMap, arg: arg };
+    var param = { junction: junction, line: line, groupIndex: 0, taskMap: taskMap, arg: arg };
 
     _nextGroup(param);
     return junction;
@@ -355,59 +379,47 @@ function Task_run(taskRoute, // @arg String: route setting. "a > b + c > d"
 function _nextGroup(param) {
     if (!param.junction["isFinished"]()) {
         // --- create task group ---
-        var group = param.line[param.index++]; // group: ["a"] or ["b", "c"] or ["d"]
+        var taskGroup = param.line[param.groupIndex++]; // ["a"] or ["b", "c"] or ["d"]
 
-        if (group.length === 1) {
-            // --- single task ---
-            _callUserTask(param, group[0], param.junction, true);
-        } else {
-            // --- parallel task ---
-            var gjunc = new Task(group.length, function(err) {
+        var groupJunction = new Task(taskGroup.length, function(err) {
                                 param.junction["done"](err);
                                 if (!err) {
                                     _nextGroup(param); // recursive call
                                 }
                             }, { "buffer": param.junction["buffer"]() });
 
-            group.forEach(function(taskName) {
-                _callUserTask(param, taskName, gjunc, false);
-            });
+        for (var i = 0, iz = taskGroup.length; i < iz; ++i) {
+            _callUserTask(param, taskGroup[i], groupJunction);
         }
     }
 
-    function _callUserTask(param, taskName, junc, singleTask) {
-        var task = new Task(1, junc, { "name": taskName });
+    function _callUserTask(param, taskName, groupJunction) {
+        var task = new Task(1, groupJunction, { "name": taskName });
 
         if (taskName in param.taskMap) {
             try {
-                param.taskMap[taskName](task, param.arg); // call userTask(task, arg) { ... }
-                if (singleTask) {
-                    _nextGroup(param); // recursive call
-                }
+                param.taskMap[taskName](task, param.arg, param.groupIndex - 1); // call userTask(task, arg, groupIndex) { ... }
             } catch (err) {
                 task["done"](err);
             }
         } else if ( isFinite(taskName) ) { // isFinite("1000") -> sleep(1000) task
             setTimeout(function() {
                 task["pass"]();
-                if (singleTask) {
-                    _nextGroup(param); // recursive call
-                }
             }, parseInt(taskName, 10) | 0);
         }
     }
 }
 
-//{@assert
-function _validateTaskMap(groupArray, // @arg TaskGroupArray:
-                          taskMap) {  // @arg TaskMapObject/TaskMapArray:
-                                      // @ret Boolean:
+//{@dev
+function _validateTaskMap(groupArray, // @arg TaskGroupArray
+                          taskMap) {  // @arg TaskMapObject|TaskMapArray
+                                      // @ret Boolean
     var taskNames = Object.keys(taskMap); // ["task_a", "task_b", "task_c"]
 
     return groupArray.every(function(taskGroup) {
         return taskGroup.every(function(taskName) {
             if (taskName in taskMap && !taskMap[taskName].length) {
-                return false; // function taskName() { ... } has not arguments
+                return false; // function taskName() { ... } has no argument.
             }
             if (taskNames.indexOf(taskName) >= 0) { // user task exsists -> true
                 return true;
@@ -416,50 +428,49 @@ function _validateTaskMap(groupArray, // @arg TaskGroupArray:
         });
     });
 }
-//}@assert
+//}@dev
 
-//{@assert
-function _type(value, types, keys) {
-    return types.split(/[\|\/]/).some(judge);
+function Task_loop(source,    // @arg Object|Array         - for loop and for-in loop data. [1, 2, 3], { a: 1, b: 2, c: 3 }
+                   tick,      // @arg Function             - tick callback function. tick(task:Task, key:String, source:Object/Array):void
+                   callback,  // @arg Function|Task = null - finished callback(err:Error, buffer:Array)
+                   options) { // @arg Object = {}          - { arg, name, buffer }
+                              // @options.arg Any = null            - task argument.
+                              // @options.name String = "Task.loop" - junction task name.
+                              // @options.buffer Array = []         - shared buffer.
+                              // @ret Task Junction
+//{@dev
+    $valid($type(source, "Object|Array"), Task_loop, "source");
+    $valid($type(tick,   "Function"),     Task_loop, "tick");
+//}@dev
 
-    function judge(type) {
-        switch (type.toLowerCase()) {
-        case "junction":  return value instanceof Task;
-        case "error":     return value instanceof Error;
-        case "omit":      return value === undefined || value === null;
-        case "array":     return Array.isArray(value);
-        case "integer":   return typeof value === "number" && Math.ceil(value) === value;
-        case "object":    return (keys && value && !hasKeys(value, keys)) ? false
-                               : (value || 0).constructor === ({}).constructor;
-        default:          return typeof value === type.toLowerCase();
-        }
-    }
-    function hasKeys(value, keys) {
-        var ary = keys ? keys.split(",") : null;
+    var keys = Object.keys(source);
+    var taskRoute = new Array(keys.length + 1).join("_").split("").join(">"); // "_>_>_ ..."
+    var taskMap = {
+            "_": function(task, arg, groupIndex) {
+                tick(task, keys[groupIndex], source);
+            }
+        };
 
-        return Object.keys(value).every(function(key) {
-            return ary.indexOf(key) >= 0;
-        });
-    }
+    options = options || {};
+    options["name"] = options["name"] || "Task.loop";
+
+    return Task_run(taskRoute, taskMap, callback, options);
 }
-function _if(value, msg) {
-    if (value) {
-        throw new Error(msg);
-    }
-}
-//}@assert
 
-// --- export ----------------------------------------------
-//{@node
-if (_inNode) {
+// --- validate / assertions -------------------------------
+//{@dev
+function $valid(val, fn, hint) { if (global["Valid"]) { global["Valid"](val, fn, hint); } }
+function $type(obj, type) { return global["Valid"] ? global["Valid"].type(obj, type) : true; }
+function $keys(obj, str) { return global["Valid"] ? global["Valid"].keys(obj, str) : true; }
+//function $some(val, str, ignore) { return global["Valid"] ? global["Valid"].some(val, str, ignore) : true; }
+//function $args(fn, args) { if (global["Valid"]) { global["Valid"].args(fn, args); } }
+//}@dev
+
+// --- exports ---------------------------------------------
+if ("process" in global) {
     module["exports"] = Task;
 }
-//}@node
-if (global["Task"]) {
-    global["Task_"] = Task; // already exsists
-} else {
-    global["Task"]  = Task;
-}
+global["Task" in global ? "Task_" : "Task"] = Task; // switch module. http://git.io/Minify
 
-})(this.self || global);
+})((this || 0).self || global); // WebModule idiom. http://git.io/WebModule
 

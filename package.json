@@ -1,18 +1,17 @@
 {
   "name":           "Slide",
-  "version":        "0.0.1",
+  "version":        "0.0.3",
   "description":    "",
   "main":           "",
   "scripts": {
     "webmodule":        "npm run build-webmodule; npm run show-webmodule; npm run watch-webmodule",
-    "task":             "npm update; npm run copy-task-module; npm run build-task; npm run show-task; npm run watch-task",
-    "copy-task-module": "cp node_modules/uupaa.task.js/lib/Task.js slide/Task.js/assets/js/Task.js",
+    "task":             "npm update; npm run build-task; npm run show-task; npm run watch-task",
 
     "watch":            "npm run watch-chrome",
-    "watch-chrome":     "node node_modules/uupaa.watch.js --verbose --action build-chrome --delay 1 ./slide/ChromeTrigger.js.md",
-    "watch-webmodule":  "node node_modules/uupaa.watch.js --verbose --action build-webmodule --delay 1 ./slide/WebModule.md",
-    "watch-help":       "node node_modules/uupaa.watch.js --verbose --action build-help --delay 1 ./slide/Help.js.md",
-    "watch-task":       "node node_modules/uupaa.watch.js --verbose --action build-task --delay 1 ./slide/Task.js.md",
+    "watch-chrome":     "node ../WebModule/run/watch.js --verbose --action build-chrome --delay 1 ./slide/ChromeTrigger.js.md",
+    "watch-webmodule":  "node ../WebModule/run/watch.js --verbose --action build-webmodule --delay 1 ./slide/WebModule.md",
+    "watch-help":       "node ../WebModule/run/watch.js --verbose --action build-help --delay 1 ./slide/Help.js.md",
+    "watch-task":       "node ../WebModule/run/watch.js --verbose --action build-task --delay 1 ./slide/Task.js.md",
     "build":            "npm run build-chrome",
     "build-chrome":     "pandoc --section-divs -s -t html5 --template ./slide/ChromeTrigger.js/template.html ./slide/ChromeTrigger.js.md -o ./slide/ChromeTrigger.js/index.html",
     "build-webmodule":  "pandoc --section-divs -s -t html5 --template ./slide/WebModule/template.html ./slide/WebModule.md -o ./slide/WebModule/index.html",
@@ -22,18 +21,11 @@
     "show-chrome":      "open ./slide/ChromeTrigger.js/index.html",
     "show-webmodule":   "open ./slide/WebModule/index.html",
     "show-help":        "open ./slide/Help.js/index.html",
-    "show-task":        "open ./slide/Task.js/index.html",
-    "copy":             "",
-    "copy-help":        "cp node_modules/uupaa.help.js/lib/Help.js assets/js/Help.js",
-    "copy-task":        "cp node_modules/uupaa.task.js/lib/Task.js assets/js/Task.js"
+    "show-task":        "open ./slide/Task.js/index.html"
   },
   "dependencies": {
   },
   "devDependencies": {
-    "uupaa.valid.js":  "",
-    "uupaa.help.js":   "",
-    "uupaa.task.js":   "",
-    "uupaa.watch.js":  ""
   },
   "repository": {
     "type":         "git",
